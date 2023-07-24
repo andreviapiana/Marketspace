@@ -10,6 +10,7 @@ import {
 
 import { SignIn } from '@screens/SignIn'
 import { Loading } from '@components/Loading'
+import { SignUp } from '@screens/SignUp'
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Karla_400Regular, Karla_700Bold })
@@ -17,11 +18,11 @@ export default function App() {
   return (
     <NativeBaseProvider theme={THEME}>
       <StatusBar
-        barStyle="light-content"
+        barStyle="dark-content"
         backgroundColor="transparent"
         translucent
       />
-      {fontsLoaded ? <SignIn /> : <Loading />}
+      {fontsLoaded ? <SignUp /> : <Loading />}
     </NativeBaseProvider>
   )
 }
