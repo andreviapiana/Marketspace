@@ -12,8 +12,9 @@ import LogoSvg from '@assets/logo.svg'
 
 import { Button } from '@components/Button'
 import { Input } from '@components/Input'
+import { UserPhoto } from '@components/UserPhoto'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { MaterialIcons } from '@expo/vector-icons'
 
@@ -44,6 +45,13 @@ export function SignUp() {
         </Center>
 
         <Center>
+          <UserPhoto
+            source={{ uri: 'https://github.com/andreviapiana.png' }}
+            alt="Foto do usuário"
+            size={88}
+            mb={4}
+          />
+
           <Input type="text" placeholder="Nome" />
 
           <Input type="text" placeholder="Email" />
