@@ -26,6 +26,8 @@ import * as FileSystem from 'expo-file-system'
 
 import { useNavigation } from '@react-navigation/native'
 
+import { Controller, useForm } from 'react-hook-form'
+
 const PHOTO_SIZE = 88
 
 export function SignUp() {
@@ -89,22 +91,10 @@ export function SignUp() {
   )
 
   // Armazenando os Inputs //
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [password, setPassword] = useState('')
-  const [passwordConfirm, setPasswordConfirm] = useState('')
+  const { control } = useForm()
 
   // Função de SignUp //
-  function handleSignUp() {
-    console.log({
-      name,
-      email,
-      phone,
-      password,
-      passwordConfirm,
-    })
-  }
+  function handleSignUp() {}
 
   return (
     <ScrollView
@@ -169,51 +159,95 @@ export function SignUp() {
             </Pressable>
           </View>
 
-          <Input type="text" placeholder="Nome" onChangeText={setName} />
-
-          <Input type="text" placeholder="Email" onChangeText={setEmail} />
-
-          <Input type="text" placeholder="Telefone" onChangeText={setPhone} />
-
-          <Input
-            type={show ? 'text' : 'password'}
-            InputRightElement={
-              <Pressable onPress={() => setShow(!show)}>
-                <Icon
-                  as={
-                    <MaterialIcons
-                      name={show ? 'visibility' : 'visibility-off'}
-                    />
-                  }
-                  size={5}
-                  mr="2"
-                  color="muted.400"
-                />
-              </Pressable>
-            }
-            placeholder="Senha"
-            onChangeText={setPassword}
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, value } }) => (
+              <Input placeholder="Nome" onChangeText={onChange} value={value} />
+            )}
           />
 
-          <Input
-            type={showConfirm ? 'text' : 'password'}
-            InputRightElement={
-              <Pressable onPress={() => setShowConfirm(!showConfirm)}>
-                <Icon
-                  as={
-                    <MaterialIcons
-                      name={showConfirm ? 'visibility' : 'visibility-off'}
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="E-mail"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="phone"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Telefone"
+                keyboardType="number-pad"
+                autoCapitalize="none"
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                type={show ? 'text' : 'password'}
+                InputRightElement={
+                  <Pressable onPress={() => setShow(!show)}>
+                    <Icon
+                      as={
+                        <MaterialIcons
+                          name={show ? 'visibility' : 'visibility-off'}
+                        />
+                      }
+                      size={5}
+                      mr="2"
+                      color="muted.400"
                     />
-                  }
-                  size={5}
-                  mr="2"
-                  color="muted.400"
-                />
-              </Pressable>
-            }
-            placeholder="Confirmar senha"
-            onChangeText={setPasswordConfirm}
-            mb={4}
+                  </Pressable>
+                }
+                placeholder="Senha"
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="confirm_password"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                type={showConfirm ? 'text' : 'password'}
+                InputRightElement={
+                  <Pressable onPress={() => setShowConfirm(!showConfirm)}>
+                    <Icon
+                      as={
+                        <MaterialIcons
+                          name={showConfirm ? 'visibility' : 'visibility-off'}
+                        />
+                      }
+                      size={5}
+                      mr="2"
+                      color="muted.400"
+                    />
+                  </Pressable>
+                }
+                placeholder="Confirmar senha"
+                mb={4}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
           />
 
           <Button
