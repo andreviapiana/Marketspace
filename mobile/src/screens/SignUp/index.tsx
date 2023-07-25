@@ -99,7 +99,11 @@ export function SignUp() {
   )
 
   // Armazenando os Inputs //
-  const { control, handleSubmit } = useForm<FormDataProps>()
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>()
 
   // Função de SignUp //
   function handleSignUp({
@@ -181,7 +185,11 @@ export function SignUp() {
             render={({ field: { onChange, value } }) => (
               <Input placeholder="Nome" onChangeText={onChange} value={value} />
             )}
+            rules={{
+              required: 'Informe o nome.',
+            }}
           />
+          <Text color="red.600">{errors.name?.message}</Text>
 
           <Controller
             control={control}
