@@ -85,7 +85,7 @@ export function SignUp() {
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
     >
-      <VStack flex={1} px={12} pb={14} pt={16} backgroundColor="gray.200">
+      <VStack flex={1} px={12} pb={14} pt={16}>
         <Center>
           <Center mb={3}>
             <LogoSvg width={'60px'} height={'40px'} />
