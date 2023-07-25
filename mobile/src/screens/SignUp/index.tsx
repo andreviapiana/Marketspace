@@ -30,6 +30,14 @@ import { Controller, useForm } from 'react-hook-form'
 
 const PHOTO_SIZE = 88
 
+type FormDataProps = {
+  name: string
+  email: string
+  phone: string
+  password: string
+  password_confirm: string
+}
+
 export function SignUp() {
   // Loading no Avatar //
   const [photoIsLoading, setPhotoIsLoading] = useState(false)
@@ -91,11 +99,17 @@ export function SignUp() {
   )
 
   // Armazenando os Inputs //
-  const { control, handleSubmit } = useForm()
+  const { control, handleSubmit } = useForm<FormDataProps>()
 
   // Função de SignUp //
-  function handleSignUp(data: any) {
-    console.log({ data })
+  function handleSignUp({
+    name,
+    email,
+    phone,
+    password,
+    password_confirm,
+  }: FormDataProps) {
+    console.log({ name, email, phone, password, password_confirm })
   }
 
   return (
@@ -226,7 +240,7 @@ export function SignUp() {
 
           <Controller
             control={control}
-            name="confirm_password"
+            name="password_confirm"
             render={({ field: { onChange, value } }) => (
               <Input
                 type={showConfirm ? 'text' : 'password'}
