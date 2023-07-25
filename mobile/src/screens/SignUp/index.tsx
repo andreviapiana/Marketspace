@@ -8,6 +8,7 @@ import {
   Icon,
   View,
   Skeleton,
+  useToast,
 } from 'native-base'
 
 import LogoSvg from '@assets/logo.svg'
@@ -29,6 +30,9 @@ const PHOTO_SIZE = 88
 export function SignUp() {
   // Loading no Avatar //
   const [photoIsLoading, setPhotoIsLoading] = useState(false)
+
+  // Notificação Toast //
+  const toast = useToast()
 
   // State para Mostrar e Ocultar as Senhas //
   const [show, setShow] = useState(false)
@@ -55,9 +59,11 @@ export function SignUp() {
           photoSelected.assets[0].uri,
         )
         if (photoInfo.exists && photoInfo.size / 1024 / 1024 > 5) {
-          return Alert.alert(
-            'Essa imagem é muito grande. Escolha uma de até 5MB.',
-          )
+          return toast.show({
+            title: 'Essa imagem é muito grande. Escolha uma de até 5MB.',
+            placement: 'top',
+            bgColor: 'red.500',
+          })
         }
 
         setUserPhoto(photoSelected.assets[0].uri)
