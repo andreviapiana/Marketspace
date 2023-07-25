@@ -2,6 +2,7 @@ import {
   BottomTabNavigationProp,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs'
+import { Platform } from 'react-native'
 
 import { Home } from '@screens/Home'
 import { MyAds } from '@screens/MyAds'
@@ -42,6 +43,13 @@ export function AppRoutes() {
         tabBarShowLabel: false,
         tabBarActiveTintColor: colors.gray[600],
         tabBarInactiveTintColor: colors.gray[400],
+        tabBarStyle: {
+          backgroundColor: colors.gray[100],
+          borderTopWidth: 0,
+          height: Platform.OS === 'android' ? 'auto' : 96,
+          paddingBottom: sizes[7],
+          paddingTop: sizes[7],
+        },
       }}
     >
       <Screen
