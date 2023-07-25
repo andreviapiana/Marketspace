@@ -21,6 +21,8 @@ import { useState } from 'react'
 import { MaterialIcons } from '@expo/vector-icons'
 
 import * as ImagePicker from 'expo-image-picker'
+import * as FileSystem from 'expo-file-system'
+import { Alert } from 'react-native'
 
 const PHOTO_SIZE = 88
 
@@ -49,6 +51,15 @@ export function SignUp() {
       }
 
       if (photoSelected.assets[0].uri) {
+        const photoInfo = await FileSystem.getInfoAsync(
+          photoSelected.assets[0].uri,
+        )
+        if (photoInfo.exists && photoInfo.size / 1024 / 1024 > 5) {
+          return Alert.alert(
+            'Essa imagem é muito grande. Escolha uma de até 5MB.',
+          )
+        }
+
         setUserPhoto(photoSelected.assets[0].uri)
       }
     } catch (error) {
