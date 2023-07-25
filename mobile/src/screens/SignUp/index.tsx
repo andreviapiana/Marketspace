@@ -28,6 +28,9 @@ import { useNavigation } from '@react-navigation/native'
 
 import { Controller, useForm } from 'react-hook-form'
 
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
+
 const PHOTO_SIZE = 88
 
 type FormDataProps = {
@@ -37,6 +40,11 @@ type FormDataProps = {
   password: string
   password_confirm: string
 }
+
+const signUpSchema = yup.object({
+  name: yup.string().required('Informe o nome'),
+  email: yup.string().required('Informe o e-mail').email('E-mail inválido'),
+})
 
 export function SignUp() {
   // Loading no Avatar //
@@ -103,7 +111,9 @@ export function SignUp() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormDataProps>()
+  } = useForm<FormDataProps>({
+    resolver: yupResolver(signUpSchema),
+  })
 
   // Função de SignUp //
   function handleSignUp({
@@ -190,9 +200,6 @@ export function SignUp() {
                 errorMessage={errors.name?.message}
               />
             )}
-            rules={{
-              required: 'Informe o nome.',
-            }}
           />
 
           <Controller
@@ -208,13 +215,6 @@ export function SignUp() {
                 errorMessage={errors.email?.message}
               />
             )}
-            rules={{
-              required: 'Informe o email.',
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: 'E-mail inválido',
-              },
-            }}
           />
 
           <Controller
