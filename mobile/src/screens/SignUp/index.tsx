@@ -91,10 +91,12 @@ export function SignUp() {
   )
 
   // Armazenando os Inputs //
-  const { control } = useForm()
+  const { control, handleSubmit } = useForm()
 
   // Função de SignUp //
-  function handleSignUp() {}
+  function handleSignUp(data: any) {
+    console.log({ data })
+  }
 
   return (
     <ScrollView
@@ -246,6 +248,8 @@ export function SignUp() {
                 mb={4}
                 onChangeText={onChange}
                 value={value}
+                onSubmitEditing={handleSubmit(handleSignUp)}
+                returnKeyType="send"
               />
             )}
           />
@@ -254,7 +258,7 @@ export function SignUp() {
             title="Criar e acessar"
             variant={'secondary'}
             mb={12}
-            onPress={handleSignUp}
+            onPress={handleSubmit(handleSignUp)}
           />
         </Center>
 
