@@ -7,6 +7,7 @@ import {
   Center,
   Icon,
   View,
+  Skeleton,
 } from 'native-base'
 
 import LogoSvg from '@assets/logo.svg'
@@ -21,7 +22,12 @@ import { MaterialIcons } from '@expo/vector-icons'
 
 import * as ImagePicker from 'expo-image-picker'
 
+const PHOTO_SIZE = 88
+
 export function SignUp() {
+// Loading no Avatar //
+const [photoIsLoading, setPhotoIsLoading] = useState(false)
+
   // State para Mostrar e Ocultar as Senhas //
   const [show, setShow] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -70,12 +76,23 @@ export function SignUp() {
 
         <Center>
           <View position={'relative'}>
-            <UserPhoto
-              source={{ uri: userPhoto }}
-              alt="Foto do usuário"
-              size={88}
-              mb={4}
-            />
+            {photoIsLoading ? (
+              <Skeleton
+                w={PHOTO_SIZE}
+                h={PHOTO_SIZE}
+                rounded="full"
+                startColor="gray.500"
+                endColor="gray.400"
+                mb={4}
+              />
+            ) : (
+              <UserPhoto
+                source={{ uri: userPhoto }}
+                alt="Foto do usuário"
+                size={88}
+                mb={4}
+              />
+            )}
             <Pressable
               onPress={handleUserPhotoSelected}
               size={10}
