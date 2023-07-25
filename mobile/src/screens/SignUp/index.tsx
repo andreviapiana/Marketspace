@@ -44,6 +44,17 @@ type FormDataProps = {
 const signUpSchema = yup.object({
   name: yup.string().required('Informe o nome'),
   email: yup.string().required('Informe o e-mail').email('E-mail inválido'),
+  phone: yup
+    .string()
+    .required('Informe seu telefone.')
+    .matches(
+      /^(?:(?:\+|00)?(55)\s?)?(?:(?:\(?[1-9][0-9]\)?)?\s?)?(?:((?:9\d|[2-9])\d{3})-?(\d{4}))$/,
+      'Telefone inválido.',
+    ),
+  password: yup
+    .string()
+    .required('Informe a senha')
+    .min(6, 'A senha deve ter pelo menos 6 dígitos.'),
 })
 
 export function SignUp() {
@@ -227,6 +238,7 @@ export function SignUp() {
                 autoCapitalize="none"
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.phone?.message}
               />
             )}
           />
@@ -254,6 +266,7 @@ export function SignUp() {
                 placeholder="Senha"
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.password?.message}
               />
             )}
           />
