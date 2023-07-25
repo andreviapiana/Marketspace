@@ -23,7 +23,8 @@ import { MaterialIcons } from '@expo/vector-icons'
 
 import * as ImagePicker from 'expo-image-picker'
 import * as FileSystem from 'expo-file-system'
-import { Alert } from 'react-native'
+
+import { useNavigation } from '@react-navigation/native'
 
 const PHOTO_SIZE = 88
 
@@ -33,6 +34,13 @@ export function SignUp() {
 
   // Notificação Toast //
   const toast = useToast()
+
+  // Navegando de volta p/ a SignIn //
+  const navigation = useNavigation()
+
+  function handleGoBack() {
+    navigation.goBack()
+  }
 
   // State para Mostrar e Ocultar as Senhas //
   const [show, setShow] = useState(false)
@@ -202,7 +210,11 @@ export function SignUp() {
             Já tem uma conta?
           </Heading>
 
-          <Button title="Ir para o login" variant={'primary'} />
+          <Button
+            title="Ir para o login"
+            variant={'primary'}
+            onPress={handleGoBack}
+          />
         </Center>
       </VStack>
     </ScrollView>

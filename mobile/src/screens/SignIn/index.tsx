@@ -18,9 +18,19 @@ import { useState } from 'react'
 
 import { MaterialIcons } from '@expo/vector-icons'
 
+import { useNavigation } from '@react-navigation/native'
+import { AuthNavigatorRoutesProps } from '@routes/auth.routes'
+
 export function SignIn() {
   // State para Mostrar e Ocultar a Senha //
   const [show, setShow] = useState(false)
+
+  // Navegando p/ a SignUp //
+  const navigation = useNavigation<AuthNavigatorRoutesProps>()
+
+  function handleNewAccount() {
+    navigation.navigate('signUp')
+  }
 
   return (
     <ScrollView
@@ -97,7 +107,11 @@ export function SignIn() {
               Ainda não tem acesso?
             </Heading>
 
-            <Button title="Criar uma conta" variant={'primary'} />
+            <Button
+              title="Criar uma conta"
+              variant={'primary'}
+              onPress={handleNewAccount}
+            />
           </Center>
         </VStack>
       </VStack>
