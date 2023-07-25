@@ -21,6 +21,13 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes'
 
+import { Controller, useForm } from 'react-hook-form'
+
+type FormData = {
+  email: string
+  password: string
+}
+
 export function SignIn() {
   // State para Mostrar e Ocultar a Senha //
   const [show, setShow] = useState(false)
@@ -30,6 +37,18 @@ export function SignIn() {
 
   function handleNewAccount() {
     navigation.navigate('signUp')
+  }
+
+  // Armazenando os Inputs //
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>()
+
+  // Função de SignIn //
+  function handleSignIn({ email, password }: FormData) {
+    console.log(email, password)
   }
 
   return (
@@ -69,29 +88,54 @@ export function SignIn() {
               Acesse sua conta
             </Heading>
 
-            <Input type="text" placeholder="Email" />
-
-            <Input
-              type={show ? 'text' : 'password'}
-              InputRightElement={
-                <Pressable onPress={() => setShow(!show)}>
-                  <Icon
-                    as={
-                      <MaterialIcons
-                        name={show ? 'visibility' : 'visibility-off'}
-                      />
-                    }
-                    size={5}
-                    mr="2"
-                    color="muted.400"
-                  />
-                </Pressable>
-              }
-              placeholder="Senha"
-              mb={4}
+            <Controller
+              control={control}
+              name="email"
+              rules={{ required: 'Informe o e-mail' }}
+              render={({ field: { onChange } }) => (
+                <Input
+                  placeholder="E-mail"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  onChangeText={onChange}
+                  errorMessage={errors.email?.message}
+                />
+              )}
             />
 
-            <Button title="Entrar" />
+            <Controller
+              control={control}
+              name="password"
+              rules={{ required: 'Informe a senha' }}
+              render={({ field: { onChange } }) => (
+                <Input
+                  type={show ? 'text' : 'password'}
+                  InputRightElement={
+                    <Pressable onPress={() => setShow(!show)}>
+                      <Icon
+                        as={
+                          <MaterialIcons
+                            name={show ? 'visibility' : 'visibility-off'}
+                          />
+                        }
+                        size={5}
+                        mr="2"
+                        color="muted.400"
+                      />
+                    </Pressable>
+                  }
+                  placeholder="Senha"
+                  onChangeText={onChange}
+                  errorMessage={errors.password?.message}
+                />
+              )}
+            />
+
+<Button
+  title="Entrar"
+  mt={4}
+  onPress={handleSubmit(handleSignIn)}
+/>
           </Center>
         </VStack>
 
