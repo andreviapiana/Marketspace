@@ -25,8 +25,8 @@ import * as ImagePicker from 'expo-image-picker'
 const PHOTO_SIZE = 88
 
 export function SignUp() {
-// Loading no Avatar //
-const [photoIsLoading, setPhotoIsLoading] = useState(false)
+  // Loading no Avatar //
+  const [photoIsLoading, setPhotoIsLoading] = useState(false)
 
   // State para Mostrar e Ocultar as Senhas //
   const [show, setShow] = useState(false)
@@ -34,18 +34,28 @@ const [photoIsLoading, setPhotoIsLoading] = useState(false)
 
   // Image Picker //
   async function handleUserPhotoSelected() {
-    const photoSelected = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-      aspect: [4, 4],
-      allowsEditing: true,
-    })
+    setPhotoIsLoading(true)
 
-    if (photoSelected.canceled) {
-      return
+    try {
+      const photoSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        aspect: [4, 4],
+        allowsEditing: true,
+      })
+
+      if (photoSelected.canceled) {
+        return
+      }
+
+      if (photoSelected.assets[0].uri) {
+        setUserPhoto(photoSelected.assets[0].uri)
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setPhotoIsLoading(false)
     }
-
-    setUserPhoto(photoSelected.assets[0].uri)
   }
 
   // Armazenando a Foto da Galeria //
