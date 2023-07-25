@@ -39,8 +39,13 @@ export function SignUp() {
       return
     }
 
-    console.log(photoSelected)
+    setUserPhoto(photoSelected.assets[0].uri)
   }
+
+  // Armazenando a Foto da Galeria //
+  const [userPhoto, setUserPhoto] = useState(
+    'https://github.com/andreviapiana.png',
+  )
 
   return (
     <ScrollView
@@ -66,7 +71,7 @@ export function SignUp() {
         <Center>
           <View position={'relative'}>
             <UserPhoto
-              source={{ uri: 'https://github.com/andreviapiana.png' }}
+              source={{ uri: userPhoto }}
               alt="Foto do usuário"
               size={88}
               mb={4}
