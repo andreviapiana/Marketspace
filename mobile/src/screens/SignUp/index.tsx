@@ -88,6 +88,24 @@ export function SignUp() {
     'https://github.com/andreviapiana.png',
   )
 
+  // Armazenando os Inputs //
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [password, setPassword] = useState('')
+  const [passwordConfirm, setPasswordConfirm] = useState('')
+
+  // Função de SignUp //
+  function handleSignUp() {
+    console.log({
+      name,
+      email,
+      phone,
+      password,
+      passwordConfirm,
+    })
+  }
+
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -151,11 +169,11 @@ export function SignUp() {
             </Pressable>
           </View>
 
-          <Input type="text" placeholder="Nome" />
+          <Input type="text" placeholder="Nome" onChangeText={setName} />
 
-          <Input type="text" placeholder="Email" />
+          <Input type="text" placeholder="Email" onChangeText={setEmail} />
 
-          <Input type="text" placeholder="Telefone" />
+          <Input type="text" placeholder="Telefone" onChangeText={setPhone} />
 
           <Input
             type={show ? 'text' : 'password'}
@@ -174,6 +192,7 @@ export function SignUp() {
               </Pressable>
             }
             placeholder="Senha"
+            onChangeText={setPassword}
           />
 
           <Input
@@ -193,10 +212,16 @@ export function SignUp() {
               </Pressable>
             }
             placeholder="Confirmar senha"
+            onChangeText={setPasswordConfirm}
             mb={4}
           />
 
-          <Button title="Criar" variant={'secondary'} mb={12} />
+          <Button
+            title="Criar e acessar"
+            variant={'secondary'}
+            mb={12}
+            onPress={handleSignUp}
+          />
         </Center>
 
         <Center mb={16}>
