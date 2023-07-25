@@ -4,8 +4,9 @@ import {
   Heading,
   ScrollView,
   Pressable,
-  Icon,
   Center,
+  Icon,
+  View,
 } from 'native-base'
 
 import LogoSvg from '@assets/logo.svg'
@@ -18,10 +19,17 @@ import { useState } from 'react'
 
 import { MaterialIcons } from '@expo/vector-icons'
 
+import * as ImagePicker from 'expo-image-picker'
+
 export function SignUp() {
   // State para Mostrar e Ocultar as Senhas //
   const [show, setShow] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+
+  // Image Picker //
+  async function handleUserPhotoSelected() {
+    await ImagePicker.launchImageLibraryAsync()
+  }
 
   return (
     <ScrollView
@@ -45,12 +53,35 @@ export function SignUp() {
         </Center>
 
         <Center>
-          <UserPhoto
-            source={{ uri: 'https://github.com/andreviapiana.png' }}
-            alt="Foto do usuário"
-            size={88}
-            mb={4}
-          />
+          <View position={'relative'}>
+            <UserPhoto
+              source={{ uri: 'https://github.com/andreviapiana.png' }}
+              alt="Foto do usuário"
+              size={88}
+              mb={4}
+            />
+            <Pressable
+              onPress={handleUserPhotoSelected}
+              size={10}
+              backgroundColor={'blue.400'}
+              borderRadius={999}
+              position={'absolute'}
+              bottom={4}
+              right={-8}
+              justifyContent={'center'}
+              alignItems={'center'}
+              _pressed={{
+                backgroundColor: 'blue.500',
+              }}
+            >
+              <Icon
+                as={MaterialIcons}
+                name="border-color"
+                size={4}
+                color={'gray.200'}
+              />
+            </Pressable>
+          </View>
 
           <Input type="text" placeholder="Nome" />
 
