@@ -152,7 +152,7 @@ export function SignUp() {
             <LogoSvg width={'60px'} height={'40px'} />
           </Center>
 
-          <Heading fontSize={'lg'} mb={2}>
+          <Heading fontSize={'lg'} mb={2} fontFamily="heading">
             Boas vindas!
           </Heading>
 
@@ -296,7 +296,6 @@ export function SignUp() {
                   </Pressable>
                 }
                 placeholder="Confirmar senha"
-                mb={4}
                 onChangeText={onChange}
                 value={value}
                 onSubmitEditing={handleSubmit(handleSignUp)}
@@ -310,6 +309,7 @@ export function SignUp() {
             title="Criar e acessar"
             variant={'secondary'}
             mb={12}
+            mt={4}
             onPress={handleSubmit(handleSignUp)}
           />
         </Center>
