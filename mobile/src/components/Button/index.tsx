@@ -10,19 +10,30 @@ type Props = IButtonProps & {
   title: string
   variant?: 'primary' | 'secondary'
   icon?: keyof typeof MaterialIcons.glyphMap
+  size?: 'small' | 'large'
 }
 
-export function Button({ title, variant, icon, ...rest }: Props) {
+export function Button({
+  title,
+  variant,
+  icon,
+  size = 'large',
+  ...rest
+}: Props) {
   return (
     <ButtonNativeBase
-      w="full"
+      w={size === 'large' ? 'full' : 'auto'}
       h={'42px'}
       bg={
         variant ? (variant === 'primary' ? 'gray.300' : 'gray.700') : 'blue.400'
       }
       rounded="md"
       _pressed={{
-        bg: variant === 'primary' ? 'gray.500' : 'blue.500',
+        bg: variant
+          ? variant === 'primary'
+            ? 'gray.400'
+            : 'gray.600'
+          : 'blue.500',
       }}
       {...rest}
     >
