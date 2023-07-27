@@ -1,7 +1,8 @@
 import { HomeHeader } from '@components/HomeHeader'
-import { Text, VStack } from 'native-base'
+import { VStack } from 'native-base'
 import { ActiveAdsCard } from './components/ActiveAdsCard'
 import { Search } from './components/Search'
+import { ProductList } from './components/ProductList'
 
 export function Home() {
   return (
@@ -9,7 +10,7 @@ export function Home() {
       <HomeHeader />
       <ActiveAdsCard />
       <Search />
-      <Text>Home</Text>
+      <ProductList />
     </VStack>
   )
 }
