@@ -1,16 +1,22 @@
 import { Flex, Text, VStack, useTheme } from 'native-base'
 
-import { Input } from '@components/Input'
-
 import { Feather } from '@expo/vector-icons'
+
+import { Input } from '@components/Input'
+import { FilterModal } from '../FilterModal'
+
+import { useState } from 'react'
 
 export function Search() {
   // Cores direto do Tema //
   const { colors } = useTheme()
 
   // Abrindo Modal do Filter //
-  async function handleOpenModal() {
-    console.log('BOTÃO DO FILTRO => ABRIU O MODAL')
+  const [modalVisible, setModalVisible] = useState(false)
+
+  async function handleOpenAndCloseModal() {
+    console.log('BOTÃO DO FILTRO => ABRIU OU FECHOU O MODAL')
+    setModalVisible(!modalVisible)
   }
 
   return (
@@ -30,10 +36,15 @@ export function Search() {
               name={'sliders'}
               size={20}
               color={colors.gray['600']}
-              onPress={handleOpenModal}
+              onPress={handleOpenAndCloseModal}
             />
           </Flex>
         }
+      />
+
+      <FilterModal
+        visible={modalVisible}
+        onClose={() => handleOpenAndCloseModal()}
       />
     </VStack>
   )
