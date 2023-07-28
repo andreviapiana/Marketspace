@@ -8,11 +8,14 @@ import {
   Heading,
   Icon,
   IconButton,
+  FlatList,
 } from 'native-base'
 
 import { Button } from '@components/Button'
+import { ConditionFilter } from '../ConditionFilter'
 
 import { Feather } from '@expo/vector-icons'
+import { useState } from 'react'
 
 type FilterModalProps = {
   visible: boolean
@@ -20,6 +23,17 @@ type FilterModalProps = {
 }
 
 export function FilterModal({ visible, onClose }: FilterModalProps) {
+  // Seletor de Condição do Produto //
+  const [selectedOptions, setSelectedOptions] = useState(['NOVO', 'USADO'])
+
+  async function handleFilterToggle(option: string) {
+    if (selectedOptions.includes(option)) {
+      setSelectedOptions(selectedOptions.filter((item) => item !== option))
+    } else {
+      setSelectedOptions([...selectedOptions, option])
+    }
+  }
+
   // Resetando a escolha dos Filtros //
   async function handleResetFilters() {
     console.log('BOTÃO DO MODAL => RESETOU OS FILTROS')
@@ -59,7 +73,19 @@ export function FilterModal({ visible, onClose }: FilterModalProps) {
             Condição
           </Text>
 
-          <Button title={'Novo'} />
+          <FlatList
+            data={['NOVO', 'USADO']}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <ConditionFilter
+                name={item}
+                onPress={() => handleFilterToggle(item)}
+                isActive={selectedOptions.includes(item)}
+              />
+            )}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
         </VStack>
 
         <VStack alignItems="flex-start">
