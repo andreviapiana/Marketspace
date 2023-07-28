@@ -2,11 +2,14 @@ import { TouchableOpacity, TouchableOpacityProps } from 'react-native'
 import { Heading, Image, Text, VStack, View } from 'native-base'
 
 import LuminariaImg from '@assets/luminaria.png'
+
 import { UserPhoto } from '@components/UserPhoto'
+import { ProductTag } from '@components/ProductTag'
 
 type Props = TouchableOpacityProps & {}
 
 export function ProductCard({ ...rest }: Props) {
+  const is_new = true
   return (
     <TouchableOpacity {...rest}>
       <VStack mb={6} position={'relative'}>
@@ -21,19 +24,8 @@ export function ProductCard({ ...rest }: Props) {
           borderColor="gray.100"
           borderWidth={1}
         />
-        <View
-          backgroundColor={'gray.600'}
-          px={2}
-          py={0.5}
-          borderRadius={999}
-          position={'absolute'}
-          top={1}
-          right={1}
-          zIndex={10}
-        >
-          <Text fontSize={10} color={'white'}>
-            USADO
-          </Text>
+        <View position={'absolute'} top={1} right={1} zIndex={10}>
+          <ProductTag is_new={is_new} />
         </View>
         <Image
           source={LuminariaImg}
