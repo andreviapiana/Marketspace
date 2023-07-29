@@ -17,33 +17,50 @@ import { ConditionFilter } from '../ConditionFilter'
 import { Feather } from '@expo/vector-icons'
 import { useState } from 'react'
 
+import { FiltersDTO } from '@dtos/FiltersDTO'
+
 type FilterModalProps = {
   visible: boolean
   onClose: () => void
+  onChangeFilters: (filters: FiltersDTO) => void
+  defaultValue: FiltersDTO
 }
 
-export function FilterModal({ visible, onClose }: FilterModalProps) {
-  // Seletor de Condição do Produto //
-  const [selectedOptions, setSelectedOptions] = useState(['NOVO', 'USADO'])
+export const emptyFilters: FiltersDTO = {
+  product_name: null,
+  is_new: null,
+  accept_trade: null,
+  payment_methods: [],
+}
 
-  async function handleFilterToggle(option: string) {
-    if (selectedOptions.includes(option)) {
-      setSelectedOptions(selectedOptions.filter((item) => item !== option))
-    } else {
-      setSelectedOptions([...selectedOptions, option])
-    }
-  }
+export function FilterModal({
+  visible,
+  onClose,
+  onChangeFilters,
+  defaultValue,
+}: FilterModalProps) {
+  // Armazenando os Filtros //
+  const [filters, setFilters] = useState<FiltersDTO>(defaultValue)
 
   // Resetando a escolha dos Filtros //
   async function handleResetFilters() {
-    console.log('BOTÃO DO MODAL => RESETOU OS FILTROS')
+    setFilters(emptyFilters)
+    onChangeFilters(emptyFilters)
     onClose()
   }
 
   // Confirmando a escolha dos Filtros //
   async function handleApplyFilters() {
-    console.log('BOTÃO DO MODAL => APLICOU OS FILTROS')
+    onChangeFilters(filters)
     onClose()
+  }
+
+  // Atualizando o State com a escolha dos Filtros //
+  function handleOnChangeFilter(change: Partial<FiltersDTO>) {
+    setFilters((prevFilter) => ({
+      ...prevFilter,
+      ...change,
+    }))
   }
 
   return (
@@ -73,19 +90,26 @@ export function FilterModal({ visible, onClose }: FilterModalProps) {
             Condição
           </Text>
 
-          <FlatList
-            data={['NOVO', 'USADO']}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <ConditionFilter
-                name={item}
-                onPress={() => handleFilterToggle(item)}
-                isActive={selectedOptions.includes(item)}
-              />
-            )}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
+          <HStack>
+            <ConditionFilter
+              name={'NOVO'}
+              onPress={() =>
+                handleOnChangeFilter({
+                  is_new: filters.is_new === true ? null : true,
+                })
+              }
+              value={filters.is_new === true}
+            />
+            <ConditionFilter
+              name={'USADO'}
+              onPress={() =>
+                handleOnChangeFilter({
+                  is_new: filters.is_new === false ? null : false,
+                })
+              }
+              value={filters.is_new === false}
+            />
+          </HStack>
         </VStack>
 
         <VStack alignItems="flex-start">
@@ -100,6 +124,12 @@ export function FilterModal({ visible, onClose }: FilterModalProps) {
             size={'lg'}
             mt={0}
             mb={0}
+            value={!!filters.accept_trade}
+            onToggle={() =>
+              handleOnChangeFilter({
+                accept_trade: !filters.accept_trade,
+              })
+            }
           />
         </VStack>
 
@@ -110,7 +140,14 @@ export function FilterModal({ visible, onClose }: FilterModalProps) {
             </Heading>
           </HStack>
 
-          <Checkbox.Group colorScheme="blue" accessibilityLabel="pick an item">
+          <Checkbox.Group
+            colorScheme="blue"
+            accessibilityLabel="pick an item"
+            defaultValue={filters.payment_methods}
+            onChange={(value) =>
+              handleOnChangeFilter({ payment_methods: value })
+            }
+          >
             <Checkbox
               _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
               value="boleto"

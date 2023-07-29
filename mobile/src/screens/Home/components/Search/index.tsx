@@ -3,9 +3,10 @@ import { Flex, Text, VStack, useTheme } from 'native-base'
 import { Feather } from '@expo/vector-icons'
 
 import { Input } from '@components/Input'
-import { FilterModal } from '../FilterModal'
+import { FilterModal, emptyFilters } from '../FilterModal'
 
 import { useState } from 'react'
+import { FiltersDTO } from '@dtos/FiltersDTO'
 
 export function Search() {
   // Cores direto do Tema //
@@ -18,6 +19,9 @@ export function Search() {
     console.log('BOTÃO DO FILTRO => ABRIU OU FECHOU O MODAL')
     setModalVisible(!modalVisible)
   }
+
+  // State com os Filtros a serem aplicados //
+  const [filters, setFilters] = useState<FiltersDTO>(emptyFilters)
 
   return (
     <VStack px={6} mt={8}>
@@ -45,6 +49,10 @@ export function Search() {
       <FilterModal
         visible={modalVisible}
         onClose={() => handleOpenAndCloseModal()}
+        onChangeFilters={(modalFilters) =>
+          setFilters((prev) => ({ ...prev, modalFilters }))
+        }
+        defaultValue={filters}
       />
     </VStack>
   )

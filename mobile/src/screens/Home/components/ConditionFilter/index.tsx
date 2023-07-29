@@ -4,22 +4,22 @@ import { Feather } from '@expo/vector-icons'
 
 type Props = IPressableProps & {
   name: string
-  isActive: boolean
+  value: boolean
 }
 
-export function ConditionFilter({ name, isActive, ...rest }: Props) {
+export function ConditionFilter({ name, value, ...rest }: Props) {
   return (
     <Pressable
       h={28}
       mr={3}
       paddingX={4}
-      paddingRight={isActive ? 2 : 4}
+      paddingRight={value ? 2 : 4}
       bg="gray.300"
       rounded="full"
       justifyContent="center"
       alignItems="center"
       overflow="hidden"
-      isPressed={isActive}
+      isPressed={value}
       _pressed={{
         bgColor: 'blue.400',
       }}
@@ -27,14 +27,14 @@ export function ConditionFilter({ name, isActive, ...rest }: Props) {
     >
       <HStack alignItems={'center'} space={1.5}>
         <Text
-          color={isActive ? 'gray.100' : 'gray.500'}
+          color={value ? 'gray.100' : 'gray.500'}
           textTransform="uppercase"
           fontSize="xs"
           fontWeight="bold"
         >
           {name}
         </Text>
-        {isActive && (
+        {value && (
           <Icon
             as={Feather}
             name="x"
