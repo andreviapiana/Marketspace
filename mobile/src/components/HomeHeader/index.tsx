@@ -26,7 +26,7 @@ export function HomeHeader() {
       <Button
         title={'Criar anúncio'}
         variant={'secondary'}
-        icon="add"
+        icon="plus"
         size={'small'}
       />
     </HStack>

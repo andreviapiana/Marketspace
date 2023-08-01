@@ -4,12 +4,12 @@ import {
   IButtonProps,
   Text,
 } from 'native-base'
-import { MaterialIcons } from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 type Props = IButtonProps & {
   title: string
   variant?: 'primary' | 'secondary'
-  icon?: keyof typeof MaterialIcons.glyphMap
+  icon?: keyof typeof MaterialCommunityIcons.glyphMap
   size?: 'small' | 'large'
 }
 
@@ -39,7 +39,7 @@ export function Button({
     >
       <HStack alignItems={'center'}>
         {icon && (
-          <MaterialIcons
+          <MaterialCommunityIcons
             name={icon}
             color={variant === 'primary' ? '#3E3A40' : '#F7F7F8'}
             size={16}
