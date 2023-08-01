@@ -1,6 +1,10 @@
-import { Box, Center, FlatList, Image } from 'native-base'
+import { Box, Center, FlatList, Image, Text } from 'native-base'
 
 import { Dimensions } from 'react-native'
+
+type CarouselProps = {
+  isAdDisabled?: boolean
+}
 
 const carouselItems = [
   {
@@ -17,13 +21,10 @@ const carouselItems = [
   },
 ]
 
-export function ProductCarousel() {
-  const active = true
-
+export function ProductCarousel({ isAdDisabled }: CarouselProps) {
   return (
     <Center>
       <FlatList
-        opacity={active ? 1 : 0.6}
         data={carouselItems}
         horizontal
         pagingEnabled
@@ -44,6 +45,24 @@ export function ProductCarousel() {
           </Box>
         )}
       />
+      {isAdDisabled && (
+        <Center
+          backgroundColor={'rgba(0,0,0,0.5)'}
+          zIndex={999}
+          width={Dimensions.get('window').width}
+          height={280}
+          position={'absolute'}
+        >
+          <Text
+            fontSize={'sm'}
+            color={'gray.100'}
+            position={'absolute'}
+            fontWeight={'bold'}
+          >
+            ANÚNCIO DESATIVADO
+          </Text>
+        </Center>
+      )}
     </Center>
   )
 }
