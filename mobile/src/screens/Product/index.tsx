@@ -1,5 +1,4 @@
 import {
-  Box,
   HStack,
   Heading,
   Icon,
@@ -18,10 +17,11 @@ import { Button } from '@components/Button'
 
 import { useNavigation } from '@react-navigation/native'
 import { Linking } from 'react-native'
+import { AppNavigatorRoutesProps } from '@routes/app.routes'
 
 export function Product() {
   // Navegando de volta p/ a tela Anterior //
-  const navigation = useNavigation()
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   function handleGoBack() {
     navigation.goBack()
@@ -29,7 +29,6 @@ export function Product() {
 
   // Navegando para a tela de Edição //
   async function handleEditProduct() {
-    console.log('BOTÃO DE EDITAR => CLICOU EM EDITAR PRODUTO')
     navigation.navigate('newandedit')
   }
 
