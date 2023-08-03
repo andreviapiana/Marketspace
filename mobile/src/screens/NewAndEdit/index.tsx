@@ -1,14 +1,18 @@
 import {
   Checkbox,
+  FlatList,
   HStack,
   Heading,
   Icon,
   IconButton,
+  Pressable,
   Radio,
   ScrollView,
+  Skeleton,
   Switch,
   Text,
   VStack,
+  useToast,
 } from 'native-base'
 
 import { Feather } from '@expo/vector-icons'
@@ -18,6 +22,18 @@ import { TextArea } from '@components/TextArea'
 import { useState } from 'react'
 import { Button } from '@components/Button'
 
+import * as ImagePicker from 'expo-image-picker'
+import uuid from 'react-native-uuid'
+import { ProductPhoto } from '@components/ProductPhoto'
+
+const PHOTO_SIZE = 100
+
+export interface ProductImageProps {
+  name: string
+  uri: string
+  type: string
+}
+
 export function NewAndEdit() {
   // Navegando de volta p/ a tela Anterior //
   const navigation = useNavigation()
@@ -26,8 +42,71 @@ export function NewAndEdit() {
     navigation.goBack()
   }
 
-  // Valor do seletor deo estado do item (Radio) //
+  // Valor do seletor do estado do item (Radio) //
   const [value, setValue] = useState('new')
+
+  // Armazenando as Imagens //
+  const [images, setImages] = useState<ProductImageProps[]>([])
+
+  // Loading nas Fotos //
+  const [photoIsLoading, setPhotoIsLoading] = useState(false)
+
+  // Armazenando imagens a serem deletadas //
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([])
+
+  // Notificação Toast //
+  const toast = useToast()
+
+  // Image Picker //
+  async function handlePhotoSelect() {
+    setPhotoIsLoading(true)
+    try {
+      const photoSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        aspect: [4, 4],
+        allowsEditing: true,
+      })
+
+      if (photoSelected.canceled) return
+
+      if (photoSelected.assets[0].uri) {
+        const fileExtension = photoSelected.assets[0].uri.split('.').pop()
+
+        const photoFile = {
+          name: `${String(uuid.v4())}.${fileExtension}`.toLowerCase(),
+          uri: photoSelected.assets[0].uri,
+          type: `${photoSelected.assets[0].type}/${fileExtension}`,
+        } as any
+
+        setImages((prev) => [photoFile, ...prev])
+      }
+    } catch (error) {
+      if (error) {
+        return toast.show({
+          title: 'Não foi possível utilizar a foto. Tente novamente.',
+          placement: 'top',
+          bgColor: 'red.500',
+        })
+      }
+    } finally {
+      setPhotoIsLoading(false)
+    }
+  }
+
+  function handleRemovePhoto(photo: ProductImageProps) {
+    setImages((prev) =>
+      prev.filter((item) => {
+        if (
+          item.name === photo.name /* &&
+          photo.uri.match(`${api.defaults.baseURL}/images/`) */
+        ) {
+          setImagesToDelete((prev) => [...prev, photo.name])
+        }
+        return item.name !== photo.name
+      }),
+    )
+  }
 
   return (
     <VStack flex={1} mt={65}>
@@ -68,12 +147,77 @@ export function NewAndEdit() {
           </Heading>
 
           <Text marginBottom={4} fontSize={'sm'}>
-            Escolha até 3 imagens para mostrar o quando o seu produto é
+            Escolha até 3 imagens para mostrar o quanto o seu produto é
             incrível!
           </Text>
+
+          <FlatList
+            data={images}
+            keyExtractor={(item) => item.name}
+            renderItem={({ item }) => (
+              <VStack>
+                <ProductPhoto
+                  source={{ uri: item.uri }}
+                  alt="Foto do produto"
+                  size={PHOTO_SIZE}
+                />
+                <Pressable
+                  w="4"
+                  h="4"
+                  rounded="full"
+                  bg="gray.600"
+                  alignItems="center"
+                  justifyContent="center"
+                  position="absolute"
+                  top={1}
+                  right={1}
+                  onPress={() => handleRemovePhoto(item)}
+                  _pressed={{
+                    backgroundColor: 'gray.500',
+                  }}
+                >
+                  <Icon as={Feather} name="x" color="gray.400" size="xs" />
+                </Pressable>
+              </VStack>
+            )}
+            ListHeaderComponent={
+              photoIsLoading ? (
+                <Skeleton
+                  w={PHOTO_SIZE}
+                  h={PHOTO_SIZE}
+                  rounded={6}
+                  startColor="gray.500"
+                  endColor="gray.400"
+                />
+              ) : null
+            }
+            ListFooterComponent={
+              images.length < 3 ? (
+                <Pressable
+                  w={100}
+                  h={100}
+                  rounded={6}
+                  bg="gray.300"
+                  alignItems="center"
+                  justifyContent="center"
+                  onPress={handlePhotoSelect}
+                  _pressed={{
+                    opacity: 0.7,
+                  }}
+                >
+                  <Icon as={Feather} name="plus" color="gray.400" size="lg" />
+                </Pressable>
+              ) : null
+            }
+            contentContainerStyle={{
+              paddingVertical: 6,
+              gap: 8,
+            }}
+            horizontal
+          />
         </VStack>
 
-        <VStack marginBottom={8} paddingX={6}>
+        <VStack marginBottom={8} marginTop={8} paddingX={6}>
           <Heading
             color="gray.700"
             fontSize="md"

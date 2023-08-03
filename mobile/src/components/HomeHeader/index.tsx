@@ -2,8 +2,17 @@ import { Heading, HStack, Text, VStack } from 'native-base'
 
 import { UserPhoto } from '@components/UserPhoto'
 import { Button } from '@components/Button'
+import { useNavigation } from '@react-navigation/native'
+import { AppNavigatorRoutesProps } from '@routes/app.routes'
 
 export function HomeHeader() {
+  // Navegando para a tela de Edição //
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
+
+  async function handleEditProduct() {
+    navigation.navigate('newandedit')
+  }
+
   return (
     <HStack bg="gray.200" px={6} mb={8} alignItems="center">
       <UserPhoto
@@ -28,6 +37,7 @@ export function HomeHeader() {
         variant={'secondary'}
         icon="plus"
         size={'small'}
+        onPress={handleEditProduct}
       />
     </HStack>
   )
