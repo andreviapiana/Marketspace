@@ -25,6 +25,8 @@ import { Button } from '@components/Button'
 import * as ImagePicker from 'expo-image-picker'
 import uuid from 'react-native-uuid'
 import { ProductPhoto } from '@components/ProductPhoto'
+import { Controller, useForm } from 'react-hook-form'
+import { CreateProductDTO } from '@dtos/CreateProductDTO'
 
 const PHOTO_SIZE = 100
 
@@ -32,6 +34,12 @@ export interface ProductImageProps {
   name: string
   uri: string
   type: string
+}
+
+type FormDataProps = {
+  name: string
+  description: string
+  price: string
 }
 
 export function NewAndEdit() {
@@ -42,8 +50,27 @@ export function NewAndEdit() {
     navigation.goBack()
   }
 
-  // Valor do seletor do estado do item (Radio) //
-  const [value, setValue] = useState('new')
+  // Armazenando o valor do seletor do estado do item (Radio) //
+  const [isNew, setIsNew] = useState<boolean>(true)
+
+  // Armazenando o valor do slider de Troca do Produto //
+  const [acceptTrade, setAcceptTrade] = useState(false)
+
+  // Valor dos Checkbox de Método de Pagamento do Produto //
+  const [paymentMethods, setPaymentMethods] = useState([])
+
+  // Armazenando os Inputs //
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({
+    defaultValues: {
+      name: '',
+      description: '',
+      price: '',
+    },
+  })
 
   // Armazenando as Imagens //
   const [images, setImages] = useState<ProductImageProps[]>([])
@@ -105,6 +132,49 @@ export function NewAndEdit() {
         }
         return item.name !== photo.name
       }),
+    )
+  }
+
+  // Atualizando o State dos Meios de Pagamento com os campos Selecionados //
+  function handleOnChangeFilter(change: Partial<CreateProductDTO>) {
+    setPaymentMethods((prevFilter) => ({
+      ...prevFilter,
+      ...change,
+    }))
+  }
+
+  // Função de Ir para o Preview //
+  function handleGoToPreview({ name, description, price }: FormDataProps) {
+    if (images.length === 0) {
+      return toast.show({
+        title: 'Selecione ao menos uma imagem!',
+        placement: 'top',
+        bgColor: 'red.500',
+      })
+    }
+
+    if (paymentMethods.length === 0) {
+      return toast.show({
+        title: 'Selecione ao menos um meio de pagamento!',
+        placement: 'top',
+        bgColor: 'red.500',
+      })
+    }
+    console.log(
+      'INPUT DO NOME =>',
+      name,
+      'INPUT DA DESCRIÇÃO =>',
+      description,
+      'INPUT DO PREÇO =>',
+      price,
+      'ESTADO DO ITEM =>',
+      isNew,
+      'ACEITA TROCA =>',
+      acceptTrade,
+      'FORMA DE PAGAMENTO =>',
+      paymentMethods,
+      'IMAGENS =>',
+      images,
     )
   }
 
@@ -227,17 +297,41 @@ export function NewAndEdit() {
             Sobre o produto
           </Heading>
 
-          <Input placeholder="Título do anúncio" />
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Nome"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.name?.message}
+              />
+            )}
+          />
 
-          <TextArea placeholder="Descrição do produto" />
+          <Controller
+            control={control}
+            name="description"
+            render={({ field: { onChange, value } }) => (
+              <TextArea
+                placeholder="Descrição do produto"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.description?.message}
+              />
+            )}
+          />
 
           <Radio.Group
             name="myRadioGroup"
             accessibilityLabel="Estado do item"
             direction={'row'}
             alignItems={'center'}
+            value={isNew ? 'new' : 'used'}
             onChange={(nextValue) => {
-              setValue(nextValue)
+              // eslint-disable-next-line no-unneeded-ternary
+              setIsNew(nextValue === 'new' ? true : false)
             }}
           >
             <Radio value="new" my={1} size="md" fontFamily={'body'}>
@@ -254,9 +348,19 @@ export function NewAndEdit() {
             Venda
           </Heading>
 
-          <Input
-            placeholder="Valor do produto"
-            InputLeftElement={<Text marginLeft={4}>R$</Text>}
+          <Controller
+            control={control}
+            name="price"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="0,00"
+                onChangeText={onChange}
+                value={value ? value.toString() : ''}
+                errorMessage={errors.price?.message}
+                InputLeftElement={<Text marginLeft={4}>R$</Text>}
+                keyboardType={'numeric'}
+              />
+            )}
           />
 
           <Heading fontSize="sm" fontFamily={'heading'}>
@@ -271,12 +375,9 @@ export function NewAndEdit() {
             size={'lg'}
             mt={0}
             mb={0}
-            /* value={!!filters.accept_trade}
-            onToggle={() =>
-              handleOnChangeFilter({
-                accept_trade: !filters.accept_trade,
-              })
-            } */
+            isChecked={acceptTrade}
+            onToggle={setAcceptTrade}
+            value={acceptTrade}
           />
 
           <HStack alignItems="baseline">
@@ -288,13 +389,14 @@ export function NewAndEdit() {
           <Checkbox.Group
             colorScheme="blue"
             accessibilityLabel="pick an item"
-            /* defaultValue={filters.payment_methods}
-            onChange={(value) => handleOnChangeFilter({ payment_methods: value })} */
+            onChange={(value) =>
+              handleOnChangeFilter({ payment_methods: value })
+            }
           >
             <Checkbox
-              _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
               value="boleto"
               my="1"
+              _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
             >
               Boleto
             </Checkbox>
@@ -344,7 +446,12 @@ export function NewAndEdit() {
           space={3}
         >
           <Button flex={1} title={'Cancelar'} variant={'primary'} />
-          <Button flex={1} title={'Avançar'} variant={'secondary'} />
+          <Button
+            flex={1}
+            title={'Avançar'}
+            variant={'secondary'}
+            onPress={handleSubmit(handleGoToPreview)}
+          />
         </HStack>
       </ScrollView>
     </VStack>
