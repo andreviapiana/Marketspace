@@ -31,12 +31,14 @@ import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 
+import { api } from '@services/api'
+
 const PHOTO_SIZE = 88
 
 type FormDataProps = {
   name: string
   email: string
-  phone: string
+  tel: string
   password: string
   password_confirm: string
 }
@@ -44,7 +46,7 @@ type FormDataProps = {
 const signUpSchema = yup.object({
   name: yup.string().required('Informe o nome'),
   email: yup.string().required('Informe o e-mail').email('E-mail inválido'),
-  phone: yup
+  tel: yup
     .string()
     .required('Informe seu telefone.')
     .matches(
@@ -131,14 +133,15 @@ export function SignUp() {
   })
 
   // Função de SignUp //
-  function handleSignUp({
-    name,
-    email,
-    phone,
-    password,
-    password_confirm,
-  }: FormDataProps) {
-    console.log({ name, email, phone, password, password_confirm })
+  async function handleSignUp({ name, email, tel, password }: FormDataProps) {
+    const response = await api.post('/users', {
+      name,
+      email,
+      tel,
+      password,
+      avatar: userPhoto,
+    })
+    console.log(response.data)
   }
 
   return (
@@ -234,7 +237,7 @@ export function SignUp() {
 
           <Controller
             control={control}
-            name="phone"
+            name="tel"
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="Telefone"
@@ -242,7 +245,7 @@ export function SignUp() {
                 autoCapitalize="none"
                 onChangeText={onChange}
                 value={value}
-                errorMessage={errors.phone?.message}
+                errorMessage={errors.tel?.message}
               />
             )}
           />
