@@ -1,4 +1,5 @@
 import {
+  Center,
   HStack,
   Heading,
   Icon,
@@ -38,35 +39,60 @@ export function Product() {
   // Variante com o Produto Desativado //
   const isAdDisabled = true
 
-  return (
-    <VStack flex={1} mt={'64px'}>
-      <HStack justifyContent={'space-between'}>
-        <IconButton
-          rounded="full"
-          width={10}
-          height={6}
-          marginBottom={3}
-          marginLeft={3}
-          justifyContent={'flex-start'}
-          icon={
-            <Icon as={Feather} name="arrow-left" color="gray.700" size="lg" />
-          }
-          onPress={handleGoBack}
-        />
+  // Variante com o modo Preview Ativado //
+  const isPreview = true
 
-        {isMyProduct && (
+  // Salvando a Edição/Novo Produto //
+  async function handleSaveProduct() {
+    console.log('Salvou o Produto')
+    handleGoBack()
+  }
+
+  return (
+    <VStack flex={1} mt={isPreview ? '0' : '64px'}>
+      {isPreview ? (
+        <Center
+          justifyContent={'center'}
+          backgroundColor={'blue.400'}
+          pt={16}
+          pb={4}
+        >
+          <Heading fontFamily={'heading'} fontSize={'md'} color={'gray.100'}>
+            Pré visualização do anúncio
+          </Heading>
+          <Text color={'gray.100'}>É assim que seu produto vai aparecer!</Text>
+        </Center>
+      ) : (
+        <HStack justifyContent={'space-between'}>
           <IconButton
             rounded="full"
             width={10}
             height={6}
             marginBottom={3}
-            marginRight={3}
+            marginLeft={3}
             justifyContent={'flex-start'}
-            icon={<Icon as={Feather} name="edit" color="gray.700" size="md" />}
-            onPress={handleEditProduct}
+            icon={
+              <Icon as={Feather} name="arrow-left" color="gray.700" size="lg" />
+            }
+            onPress={handleGoBack}
           />
-        )}
-      </HStack>
+
+          {isMyProduct && (
+            <IconButton
+              rounded="full"
+              width={10}
+              height={6}
+              marginBottom={3}
+              marginRight={3}
+              justifyContent={'flex-start'}
+              icon={
+                <Icon as={Feather} name="edit" color="gray.700" size="md" />
+              }
+              onPress={handleEditProduct}
+            />
+          )}
+        </HStack>
+      )}
 
       <ProductCarousel isAdDisabled={isAdDisabled} />
 
@@ -170,7 +196,7 @@ export function Product() {
           </VStack>
         </VStack>
 
-        {!isMyProduct ? (
+        {isPreview ? (
           <HStack
             justifyContent={'space-between'}
             paddingX={6}
@@ -179,50 +205,83 @@ export function Product() {
             alignItems={'center'}
             backgroundColor={'gray.100'}
             flex={1}
+            space={3}
           >
-            <Heading fontFamily={'heading'} color={'blue.500'} fontSize={'xl'}>
-              <Text fontSize={'sm'}>R$&nbsp;</Text>
-              120,00
-            </Heading>
-
             <Button
-              title={'Entrar em contato'}
-              icon="whatsapp"
-              size={'small'}
-              onPress={() =>
-                Linking.canOpenURL('whatsapp://send?text=oi').then(
-                  (supported) => {
-                    if (supported) {
-                      return Linking.openURL(
-                        'whatsapp://send?phone=5554999999999&text=Oi, produto disponível?',
-                      )
-                    } else {
-                      return Linking.openURL(
-                        'https://api.whatsapp.com/send?phone=5554999999999&text=Oi, produto disponível?',
-                      )
-                    }
-                  },
-                )
-              }
+              flex={1}
+              title={'Voltar e editar'}
+              variant={'primary'}
+              icon="arrow-left"
+              onPress={handleEditProduct}
+            />
+            <Button
+              flex={1}
+              title={'Publicar'}
+              icon="tag-outline"
+              onPress={handleSaveProduct}
             />
           </HStack>
         ) : (
-          <VStack paddingX={6} space={2} mt={2} mb={10}>
-            {isAdDisabled ? (
-              <Button title={'Reativar anúncio'} icon="power" />
+          <View>
+            {!isMyProduct ? (
+              <HStack
+                justifyContent={'space-between'}
+                paddingX={6}
+                paddingTop={5}
+                paddingBottom={7}
+                alignItems={'center'}
+                backgroundColor={'gray.100'}
+                flex={1}
+              >
+                <Heading
+                  fontFamily={'heading'}
+                  color={'blue.500'}
+                  fontSize={'xl'}
+                >
+                  <Text fontSize={'sm'}>R$&nbsp;</Text>
+                  120,00
+                </Heading>
+
+                <Button
+                  title={'Entrar em contato'}
+                  icon="whatsapp"
+                  size={'small'}
+                  onPress={() =>
+                    Linking.canOpenURL('whatsapp://send?text=oi').then(
+                      (supported) => {
+                        if (supported) {
+                          return Linking.openURL(
+                            'whatsapp://send?phone=5554999999999&text=Oi, produto disponível?',
+                          )
+                        } else {
+                          return Linking.openURL(
+                            'https://api.whatsapp.com/send?phone=5554999999999&text=Oi, produto disponível?',
+                          )
+                        }
+                      },
+                    )
+                  }
+                />
+              </HStack>
             ) : (
-              <Button
-                title={'Desativar anúncio'}
-                icon="power"
-                variant={'secondary'}
-              />
+              <VStack paddingX={6} space={2} mt={2} mb={10}>
+                {isAdDisabled ? (
+                  <Button title={'Reativar anúncio'} icon="power" />
+                ) : (
+                  <Button
+                    title={'Desativar anúncio'}
+                    icon="power"
+                    variant={'secondary'}
+                  />
+                )}
+                <Button
+                  title={'Excluir anúncio'}
+                  icon="trash-can-outline"
+                  variant={'primary'}
+                />
+              </VStack>
             )}
-            <Button
-              title={'Excluir anúncio'}
-              icon="trash-can-outline"
-              variant={'primary'}
-            />
-          </VStack>
+          </View>
         )}
       </ScrollView>
     </VStack>
