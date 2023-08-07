@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Text,
   VStack,
@@ -33,8 +34,6 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 import { api } from '@services/api'
-import axios from 'axios'
-import { Alert } from 'react-native'
 
 import { AppError } from '@utils/AppError'
 
@@ -77,6 +76,9 @@ const signUpSchema = yup.object({
 export function SignUp() {
   // Loading no Avatar //
   const [photoIsLoading, setPhotoIsLoading] = useState(false)
+
+  // Loading Geral //
+  const [isLoading, setIsLoading] = useState(false)
 
   // Notificação Toast //
   const toast = useToast()
@@ -157,17 +159,29 @@ export function SignUp() {
   // Função de SignUp //
   async function handleSignUp({ name, email, tel, password }: FormDataProps) {
     try {
-      const response = await api.post('/users', {
-        name,
-        email,
-        tel,
-        password,
-        avatar: userPhoto,
+      const formData = new FormData()
+      formData.append('name', name)
+      formData.append('email', email)
+      formData.append('tel', tel)
+      formData.append('password', password)
+      if (userPhoto.uri) {
+        formData.append('avatar', userPhoto as any)
+      } else {
+        return toast.show({
+          title: 'Por favor selecione uma imagem!',
+          placement: 'top',
+          bgColor: 'red.500',
+        })
+      }
+      setIsLoading(true)
+      await api.post('/users', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       })
-      console.log(response.data)
+      /* await signIn(email, password) */
     } catch (error) {
       const isAppError = error instanceof AppError
-
       const title = isAppError
         ? error.message
         : 'Não foi possível criar a conta. Tente novamente.'
@@ -177,6 +191,8 @@ export function SignUp() {
         placement: 'top',
         bgColor: 'red.500',
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -350,6 +366,7 @@ export function SignUp() {
             mb={12}
             mt={4}
             onPress={handleSubmit(handleSignUp)}
+            isLoading={isLoading}
           />
         </Center>
 
