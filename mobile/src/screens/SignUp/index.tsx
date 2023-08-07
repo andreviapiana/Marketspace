@@ -12,6 +12,7 @@ import {
 } from 'native-base'
 
 import LogoSvg from '@assets/logo.svg'
+import defaultUserImg from '@assets/avatar.png'
 
 import { Button } from '@components/Button'
 import { Input } from '@components/Input'
@@ -41,6 +42,12 @@ type FormDataProps = {
   tel: string
   password: string
   password_confirm: string
+}
+
+type AvatarProps = {
+  name: string
+  uri: string
+  type: string
 }
 
 const signUpSchema = yup.object({
@@ -81,8 +88,11 @@ export function SignUp() {
   const [show, setShow] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
+  // Armazenando a Foto da Galeria //
+  const [userPhoto, setUserPhoto] = useState<AvatarProps>({} as AvatarProps)
+
   // Image Picker //
-  async function handleUserPhotoSelected() {
+  async function handleUserPhotoSelect() {
     setPhotoIsLoading(true)
 
     try {
@@ -109,7 +119,20 @@ export function SignUp() {
           })
         }
 
-        setUserPhoto(photoSelected.assets[0].uri)
+        const fileExtension = photoSelected.assets[0].uri.split('.').pop()
+
+        const photoFile = {
+          name: `.${fileExtension}`.toLowerCase(),
+          uri: photoSelected.assets[0].uri,
+          type: `${photoSelected.assets[0].type}/${fileExtension}`,
+        } as any
+
+        setUserPhoto(photoFile)
+        toast.show({
+          title: 'Foto selecionada!',
+          placement: 'top',
+          bgColor: 'green.500',
+        })
       }
     } catch (error) {
       console.log(error)
@@ -117,11 +140,6 @@ export function SignUp() {
       setPhotoIsLoading(false)
     }
   }
-
-  // Armazenando a Foto da Galeria //
-  const [userPhoto, setUserPhoto] = useState(
-    'https://github.com/andreviapiana.png',
-  )
 
   // Armazenando os Inputs //
   const {
@@ -178,14 +196,14 @@ export function SignUp() {
               />
             ) : (
               <UserPhoto
-                source={{ uri: userPhoto }}
+                source={userPhoto.uri ? { uri: userPhoto.uri } : defaultUserImg}
                 alt="Foto do usuário"
-                size={88}
+                size={PHOTO_SIZE}
                 mb={4}
               />
             )}
             <Pressable
-              onPress={handleUserPhotoSelected}
+              onPress={handleUserPhotoSelect}
               size={10}
               backgroundColor={'blue.400'}
               borderRadius={999}
