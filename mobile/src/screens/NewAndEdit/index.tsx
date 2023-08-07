@@ -28,6 +28,18 @@ import { ProductPhoto } from '@components/ProductPhoto'
 import { Controller, useForm } from 'react-hook-form'
 import { CreateProductDTO } from '@dtos/CreateProductDTO'
 
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
+
+const newAndEditSchema = yup.object({
+  name: yup.string().required('Informe o nome').min(2, 'O nome é muito curto.'),
+  description: yup
+    .string()
+    .required('Informe a descrição')
+    .min(3, 'A descrição é muito curta.'),
+  price: yup.string().required('Informe o preço de venda'),
+})
+
 const PHOTO_SIZE = 100
 
 export interface ProductImageProps {
@@ -70,6 +82,7 @@ export function NewAndEdit() {
       description: '',
       price: '',
     },
+    resolver: yupResolver(newAndEditSchema),
   })
 
   // Armazenando as Imagens //
@@ -176,6 +189,15 @@ export function NewAndEdit() {
       'IMAGENS =>',
       images,
     )
+    navigation.navigate('product', {
+      name,
+      description,
+      price,
+      isNew,
+      acceptTrade,
+      paymentMethods,
+      images,
+    })
   }
 
   return (
