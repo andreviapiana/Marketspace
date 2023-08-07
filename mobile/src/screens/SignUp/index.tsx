@@ -36,6 +36,8 @@ import { api } from '@services/api'
 import axios from 'axios'
 import { Alert } from 'react-native'
 
+import { AppError } from '@utils/AppError'
+
 const PHOTO_SIZE = 88
 
 type FormDataProps = {
@@ -164,9 +166,17 @@ export function SignUp() {
       })
       console.log(response.data)
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        Alert.alert(error.response?.data.message)
-      }
+      const isAppError = error instanceof AppError
+
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível criar a conta. Tente novamente.'
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500',
+      })
     }
   }
 
