@@ -15,6 +15,8 @@ import HomeSvg from '@assets/home.svg'
 import MyAdsSvg from '@assets/myads.svg'
 import SignOutSvg from '@assets/signout.svg'
 
+import { useAuth } from '@hooks/useAuth'
+
 type AppRoutes = {
   home: undefined
   myads: undefined
@@ -35,6 +37,9 @@ export function AppRoutes() {
   // Estilo e Tamanho dos Ícones do Menu Inferior //
   const { sizes, colors } = useTheme()
   const iconSize = sizes[6]
+
+  // SignOut //
+  const { signOut } = useAuth()
 
   return (
     <Navigator
@@ -88,7 +93,7 @@ export function AppRoutes() {
         listeners={{
           tabPress: (e) => {
             e.preventDefault()
-            /* signOut() */
+            signOut()
           },
         }}
       />
