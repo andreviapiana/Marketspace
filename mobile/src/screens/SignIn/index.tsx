@@ -23,12 +23,17 @@ import { AuthNavigatorRoutesProps } from '@routes/auth.routes'
 
 import { Controller, useForm } from 'react-hook-form'
 
+import { useAuth } from '@hooks/useAuth'
+
 type FormData = {
   email: string
   password: string
 }
 
 export function SignIn() {
+  // useAuth //
+  const { signIn } = useAuth()
+
   // State para Mostrar e Ocultar a Senha //
   const [show, setShow] = useState(false)
 
@@ -48,7 +53,7 @@ export function SignIn() {
 
   // Função de SignIn //
   function handleSignIn({ email, password }: FormData) {
-    console.log(email, password)
+    signIn(email, password)
   }
 
   return (
@@ -131,11 +136,11 @@ export function SignIn() {
               )}
             />
 
-<Button
-  title="Entrar"
-  mt={4}
-  onPress={handleSubmit(handleSignIn)}
-/>
+            <Button
+              title="Entrar"
+              mt={4}
+              onPress={handleSubmit(handleSignIn)}
+            />
           </Center>
         </VStack>
 
