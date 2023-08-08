@@ -4,8 +4,12 @@ import { UserPhoto } from '@components/UserPhoto'
 import { Button } from '@components/Button'
 import { useNavigation } from '@react-navigation/native'
 import { AppNavigatorRoutesProps } from '@routes/app.routes'
+import { useAuth } from '@hooks/useAuth'
 
 export function HomeHeader() {
+  // useAuth - Capturando o Usuário //
+  const { user } = useAuth()
+
   // Navegando para a tela de Edição //
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
@@ -28,7 +32,7 @@ export function HomeHeader() {
         </Text>
 
         <Heading color="gray.700" fontSize="md" fontWeight={'bold'}>
-          André!
+          {user.name}!
         </Heading>
       </VStack>
 
