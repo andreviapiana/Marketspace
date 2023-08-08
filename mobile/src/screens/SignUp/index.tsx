@@ -37,6 +37,8 @@ import { api } from '@services/api'
 
 import { AppError } from '@utils/AppError'
 
+import { useAuth } from '@hooks/useAuth'
+
 const PHOTO_SIZE = 88
 
 type FormDataProps = {
@@ -74,6 +76,9 @@ const signUpSchema = yup.object({
 })
 
 export function SignUp() {
+  // useAuth //
+  const { signIn } = useAuth()
+
   // Loading no Avatar //
   const [photoIsLoading, setPhotoIsLoading] = useState(false)
 
@@ -179,7 +184,7 @@ export function SignUp() {
           'Content-Type': 'multipart/form-data',
         },
       })
-      /* await signIn(email, password) */
+      await signIn(email, password)
     } catch (error) {
       const isAppError = error instanceof AppError
       const title = isAppError
