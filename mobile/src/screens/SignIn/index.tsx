@@ -49,6 +49,9 @@ export function SignIn() {
   // Toast //
   const toast = useToast()
 
+  // Loading //
+  const [isLoading, setIsLoading] = useState(false)
+
   // Armazenando os Inputs //
   const {
     control,
@@ -59,6 +62,7 @@ export function SignIn() {
   // Função de SignIn //
   async function handleSignIn({ email, password }: FormData) {
     try {
+      setIsLoading(true)
       await signIn(email, password)
     } catch (error) {
       const isAppError = error instanceof AppError
@@ -72,6 +76,8 @@ export function SignIn() {
         placement: 'top',
         bgColor: 'red.500',
       })
+
+      setIsLoading(false)
     }
   }
 
@@ -159,6 +165,7 @@ export function SignIn() {
               title="Entrar"
               mt={4}
               onPress={handleSubmit(handleSignIn)}
+              isLoading={isLoading}
             />
           </Center>
         </VStack>
