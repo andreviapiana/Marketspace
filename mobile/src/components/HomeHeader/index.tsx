@@ -6,6 +6,9 @@ import { useNavigation } from '@react-navigation/native'
 import { AppNavigatorRoutesProps } from '@routes/app.routes'
 import { useAuth } from '@hooks/useAuth'
 
+import { api } from '@services/api'
+import defaultUserImg from '@assets/avatar.png'
+
 export function HomeHeader() {
   // useAuth - Capturando o Usuário //
   const { user } = useAuth()
@@ -20,7 +23,11 @@ export function HomeHeader() {
   return (
     <HStack bg="gray.200" px={6} mb={8} alignItems="center">
       <UserPhoto
-        source={{ uri: 'https://github.com/andreviapiana.png' }}
+        source={
+          user.avatar
+            ? { uri: `${api.defaults.baseURL}/images/${user.avatar}` }
+            : defaultUserImg
+        }
         size={45}
         alt="Imagem do usuário"
         mr={4}
