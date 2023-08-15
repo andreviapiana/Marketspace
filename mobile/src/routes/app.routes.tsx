@@ -14,6 +14,7 @@ import { useTheme } from 'native-base'
 import HomeSvg from '@assets/home.svg'
 import MyAdsSvg from '@assets/myads.svg'
 import SignOutSvg from '@assets/signout.svg'
+import { Preview } from '@screens/Preview'
 
 import { useAuth } from '@hooks/useAuth'
 
@@ -22,6 +23,7 @@ type AppRoutes = {
   myads: undefined
   newandedit: undefined
   product: undefined
+  preview: undefined
   signOut: undefined
 }
 
@@ -109,6 +111,12 @@ export function AppRoutes() {
         component={Product}
         options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
       />
+
+<Screen
+  name="preview"
+  component={Preview}
+  options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
+/>
     </Navigator>
   )
 }
