@@ -1,8 +1,10 @@
 import { FlatList } from 'native-base'
 
 import { ProductCard } from '@components/ProductCard'
-
 import { EmptyList } from '@components/EmptyList'
+
+import { AppNavigatorRoutesProps } from '@routes/app.routes'
+import { useNavigation } from '@react-navigation/native'
 
 const PRODUCTS = [
   {
@@ -60,11 +62,19 @@ const PRODUCTS = [
 ]
 
 export function ProductList() {
+  // Navegando para a tela de Detalhes do Produto //
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
+
+  async function handleGoToProduct() {
+    console.log('BOTÃO DE DETALHES => CLICOU EM ABRIR DETALHES')
+    navigation.navigate('product')
+  }
+
   return (
     <FlatList
       data={PRODUCTS}
       keyExtractor={(item) => item.id}
-      renderItem={() => <ProductCard />}
+      renderItem={() => <ProductCard onPress={handleGoToProduct} />}
       showsVerticalScrollIndicator={false}
       _contentContainerStyle={{
         paddingBottom: 4,

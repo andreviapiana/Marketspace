@@ -5,27 +5,22 @@ import LuminariaImg from '@assets/luminaria.png'
 
 import { UserPhoto } from '@components/UserPhoto'
 import { ProductTag } from '@components/ProductTag'
-import { useNavigation } from '@react-navigation/native'
-import { AppNavigatorRoutesProps } from '@routes/app.routes'
 
 type Props = TouchableOpacityProps & {
   isAdDisabled?: boolean
   hideUserAvatar?: boolean
 }
 
-export function ProductCard({ isAdDisabled, hideUserAvatar, ...rest }: Props) {
+export function ProductCard({
+  isAdDisabled,
+  hideUserAvatar,
+  onPress,
+  ...rest
+}: Props) {
   const is_new = true
 
-  // Navegando para a tela de Detalhes do Produto //
-  const navigation = useNavigation<AppNavigatorRoutesProps>()
-
-  async function handleProduct() {
-    console.log('BOTÃO DE DETALHES => CLICOU EM ABRIR DETALHES')
-    navigation.navigate('product')
-  }
-
   return (
-    <TouchableOpacity {...rest} onPress={handleProduct}>
+    <TouchableOpacity {...rest} onPress={onPress}>
       <VStack mb={6} position={'relative'}>
         {!hideUserAvatar && (
           <UserPhoto
