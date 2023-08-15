@@ -1,9 +1,12 @@
 import { Box, Center, FlatList, Image, Text } from 'native-base'
 
+import { ProductImageDTO } from '@dtos/ProductImageDTO'
+
 import { Dimensions } from 'react-native'
 
 type CarouselProps = {
   isAdDisabled?: boolean
+  productImages?: ProductImageDTO[]
 }
 
 const carouselItems = [
@@ -18,11 +21,14 @@ const carouselItems = [
   },
 ]
 
-export function ProductCarousel({ isAdDisabled }: CarouselProps) {
+export function ProductCarousel({
+  isAdDisabled,
+  productImages,
+}: CarouselProps) {
   return (
     <Center>
       <FlatList
-        data={carouselItems}
+        data={productImages || carouselItems}
         horizontal
         pagingEnabled
         keyExtractor={(item) => item.uri}
