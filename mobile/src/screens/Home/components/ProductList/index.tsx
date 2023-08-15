@@ -2,6 +2,8 @@ import { FlatList } from 'native-base'
 
 import { ProductCard } from '@components/ProductCard'
 
+import { EmptyList } from '@components/EmptyList'
+
 const PRODUCTS = [
   {
     id: '1',
@@ -71,6 +73,7 @@ export function ProductList() {
       columnWrapperStyle={{ justifyContent: 'space-between' }}
       px={6}
       mt={2}
+      ListEmptyComponent={<EmptyList />}
     />
   )
 }
