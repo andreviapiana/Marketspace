@@ -8,7 +8,6 @@ import {
   Heading,
   Icon,
   IconButton,
-  FlatList,
 } from 'native-base'
 
 import { Button } from '@components/Button'
