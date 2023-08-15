@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+  Center,
   HStack,
   Heading,
   Icon,
-  IconButton,
   ScrollView,
   Text,
   VStack,
-  View,
 } from 'native-base'
-import { Feather, Ionicons, FontAwesome } from '@expo/vector-icons'
+
+import { Ionicons, FontAwesome } from '@expo/vector-icons'
 
 import { ProductCarousel } from '@components/ProductCarousel'
 import { UserPhoto } from '@components/UserPhoto'
@@ -16,59 +17,45 @@ import { ProductTag } from '@components/ProductTag'
 import { Button } from '@components/Button'
 
 import { useNavigation } from '@react-navigation/native'
-import { Linking } from 'react-native'
 import { AppNavigatorRoutesProps } from '@routes/app.routes'
 
-export function Product() {
+import { useState } from 'react'
+
+export function Preview() {
   // Navegando de volta p/ a tela Anterior //
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
-  function handleGoBack() {
-    navigation.goBack()
-  }
-
-  // Navegando para a tela de Edição //
+  // Navegando de volta para a tela de Edição //
   async function handleEditProduct() {
     navigation.navigate('newandedit')
   }
 
-  // Exibindo o Botão de Editar quando você é o dono do produto //
-  const isMyProduct = true
+  // Loading //
+  const [isLoading, setIsLoading] = useState(false)
 
-  // Variante com o Produto Desativado //
-  const isAdDisabled = true
+  // Salvando o novo Produto/Anúncio //
+  async function handleSaveProduct() {
+    setIsLoading(true)
+    console.log('Clicou em Publicar')
+    setIsLoading(false)
+    navigation.navigate('home')
+  }
 
   return (
-    <VStack flex={1} mt={'64px'}>
-      <HStack justifyContent={'space-between'}>
-        <IconButton
-          rounded="full"
-          width={10}
-          height={6}
-          marginBottom={3}
-          marginLeft={3}
-          justifyContent={'flex-start'}
-          icon={
-            <Icon as={Feather} name="arrow-left" color="gray.700" size="lg" />
-          }
-          onPress={handleGoBack}
-        />
+    <VStack flex={1} mt={0}>
+      <Center
+        justifyContent={'center'}
+        backgroundColor={'blue.400'}
+        pt={16}
+        pb={4}
+      >
+        <Heading fontFamily={'heading'} fontSize={'md'} color={'gray.100'}>
+          Pré visualização do anúncio
+        </Heading>
+        <Text color={'gray.100'}>É assim que seu produto vai aparecer!</Text>
+      </Center>
 
-        {isMyProduct && (
-          <IconButton
-            rounded="full"
-            width={10}
-            height={6}
-            marginBottom={3}
-            marginRight={3}
-            justifyContent={'flex-start'}
-            icon={<Icon as={Feather} name="edit" color="gray.700" size="md" />}
-            onPress={handleEditProduct}
-          />
-        )}
-      </HStack>
-
-      <ProductCarousel isAdDisabled={isAdDisabled} />
+      <ProductCarousel />
 
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
@@ -85,9 +72,9 @@ export function Product() {
         </HStack>
 
         <VStack paddingX={6} space={3} mb={6}>
-          <View width={42}>
+          <HStack>
             <ProductTag is_new={true} />
-          </View>
+          </HStack>
 
           <HStack justifyContent={'space-between'}>
             <Heading fontFamily={'heading'} fontSize={'lg'}>
@@ -170,66 +157,31 @@ export function Product() {
           </VStack>
         </VStack>
 
-        <View>
-          {!isMyProduct ? (
-            <HStack
-              justifyContent={'space-between'}
-              paddingX={6}
-              paddingTop={5}
-              paddingBottom={7}
-              alignItems={'center'}
-              backgroundColor={'gray.100'}
-              flex={1}
-            >
-              <Heading
-                fontFamily={'heading'}
-                color={'blue.500'}
-                fontSize={'xl'}
-              >
-                <Text fontSize={'sm'}>R$&nbsp;</Text>
-                120,00
-              </Heading>
-
-              <Button
-                title={'Entrar em contato'}
-                icon="whatsapp"
-                size={'small'}
-                onPress={() =>
-                  Linking.canOpenURL('whatsapp://send?text=oi').then(
-                    (supported) => {
-                      if (supported) {
-                        return Linking.openURL(
-                          'whatsapp://send?phone=5554999999999&text=Oi, produto disponível?',
-                        )
-                      } else {
-                        return Linking.openURL(
-                          'https://api.whatsapp.com/send?phone=5554999999999&text=Oi, produto disponível?',
-                        )
-                      }
-                    },
-                  )
-                }
-              />
-            </HStack>
-          ) : (
-            <VStack paddingX={6} space={2} mt={2} mb={10}>
-              {isAdDisabled ? (
-                <Button title={'Reativar anúncio'} icon="power" />
-              ) : (
-                <Button
-                  title={'Desativar anúncio'}
-                  icon="power"
-                  variant={'secondary'}
-                />
-              )}
-              <Button
-                title={'Excluir anúncio'}
-                icon="trash-can-outline"
-                variant={'primary'}
-              />
-            </VStack>
-          )}
-        </View>
+        <HStack
+          justifyContent={'space-between'}
+          paddingX={6}
+          paddingTop={5}
+          paddingBottom={7}
+          alignItems={'center'}
+          backgroundColor={'gray.100'}
+          flex={1}
+          space={3}
+        >
+          <Button
+            flex={1}
+            title={'Voltar e editar'}
+            variant={'primary'}
+            icon="arrow-left"
+            onPress={handleEditProduct}
+          />
+          <Button
+            flex={1}
+            title={'Publicar'}
+            icon="tag-outline"
+            onPress={handleSaveProduct}
+            isLoading={isLoading}
+          />
+        </HStack>
       </ScrollView>
     </VStack>
   )
