@@ -35,6 +35,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 
 import { ProductImageDTO } from '@dtos/ProductImageDTO'
 
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+
 const newAndEditSchema = yup.object({
   name: yup.string().required('Informe o nome').min(2, 'O nome é muito curto.'),
   description: yup
@@ -57,7 +59,7 @@ const PHOTO_SIZE = 100
 
 export function NewAndEdit() {
   // Navegando de volta p/ a tela Anterior //
-  const navigation = useNavigation()
+  const navigation = useNavigation<NativeStackNavigationProp<any>>()
 
   function handleGoBack() {
     navigation.goBack()
