@@ -1,5 +1,4 @@
 import {
-  Checkbox,
   FlatList,
   HStack,
   Heading,
@@ -16,20 +15,25 @@ import {
 } from 'native-base'
 
 import { Feather } from '@expo/vector-icons'
-import { useNavigation } from '@react-navigation/native'
+
 import { Input } from '@components/Input'
 import { TextArea } from '@components/TextArea'
-import { useState } from 'react'
 import { Button } from '@components/Button'
+import { ProductPhoto } from '@components/ProductPhoto'
+import { PaymentsCheckbox } from './components/PaymentsCheckbox'
+
+import { useNavigation } from '@react-navigation/native'
+import { useState } from 'react'
 
 import * as ImagePicker from 'expo-image-picker'
 import uuid from 'react-native-uuid'
-import { ProductPhoto } from '@components/ProductPhoto'
+
 import { Controller, useForm } from 'react-hook-form'
-import { CreateProductDTO } from '@dtos/CreateProductDTO'
 
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+
+import { ProductImageDTO } from '@dtos/ProductImageDTO'
 
 const newAndEditSchema = yup.object({
   name: yup.string().required('Informe o nome').min(2, 'O nome é muito curto.'),
@@ -37,22 +41,19 @@ const newAndEditSchema = yup.object({
     .string()
     .required('Informe a descrição')
     .min(3, 'A descrição é muito curta.'),
-  price: yup.string().required('Informe o preço de venda'),
+  price: yup.number().required('Informe o preço de venda'),
+  is_new: yup.boolean().required(),
+  accept_trade: yup.boolean().required(),
+  payment_methods: yup
+    .array()
+    .of(yup.string())
+    .min(1, 'Selecione um meio de pagamento.')
+    .required('Selecione um meio de pagamento.'),
 })
 
+type FormDataProps = yup.InferType<typeof newAndEditSchema>
+
 const PHOTO_SIZE = 100
-
-export interface ProductImageProps {
-  name: string
-  uri: string
-  type: string
-}
-
-type FormDataProps = {
-  name: string
-  description: string
-  price: string
-}
 
 export function NewAndEdit() {
   // Navegando de volta p/ a tela Anterior //
@@ -61,15 +62,6 @@ export function NewAndEdit() {
   function handleGoBack() {
     navigation.goBack()
   }
-
-  // Armazenando o valor do seletor do estado do item (Radio) //
-  const [isNew, setIsNew] = useState<boolean>(true)
-
-  // Armazenando o valor do slider de Troca do Produto //
-  const [acceptTrade, setAcceptTrade] = useState(false)
-
-  // Valor dos Checkbox de Método de Pagamento do Produto //
-  const [paymentMethods, setPaymentMethods] = useState([])
 
   // Armazenando os Inputs //
   const {
@@ -80,13 +72,15 @@ export function NewAndEdit() {
     defaultValues: {
       name: '',
       description: '',
-      price: '',
+      is_new: true,
+      accept_trade: false,
+      payment_methods: [],
     },
     resolver: yupResolver(newAndEditSchema),
   })
 
   // Armazenando as Imagens //
-  const [images, setImages] = useState<ProductImageProps[]>([])
+  const [images, setImages] = useState<ProductImageDTO[]>([])
 
   // Loading nas Fotos //
   const [photoIsLoading, setPhotoIsLoading] = useState(false)
@@ -134,7 +128,7 @@ export function NewAndEdit() {
     }
   }
 
-  function handleRemovePhoto(photo: ProductImageProps) {
+  function handleRemovePhoto(photo: ProductImageDTO) {
     setImages((prev) =>
       prev.filter((item) => {
         if (
@@ -148,16 +142,15 @@ export function NewAndEdit() {
     )
   }
 
-  // Atualizando o State dos Meios de Pagamento com os campos Selecionados //
-  function handleOnChangeFilter(change: Partial<CreateProductDTO>) {
-    setPaymentMethods((prevFilter) => ({
-      ...prevFilter,
-      ...change,
-    }))
-  }
-
   // Função de Ir para o Preview //
-  function handleGoToPreview({ name, description, price }: FormDataProps) {
+  function handleGoToPreview({
+    name,
+    description,
+    price,
+    is_new,
+    accept_trade,
+    payment_methods,
+  }: FormDataProps) {
     if (images.length === 0) {
       return toast.show({
         title: 'Selecione ao menos uma imagem!',
@@ -166,36 +159,21 @@ export function NewAndEdit() {
       })
     }
 
-    if (paymentMethods.length === 0) {
+    if (payment_methods.length === 0) {
       return toast.show({
         title: 'Selecione ao menos um meio de pagamento!',
         placement: 'top',
         bgColor: 'red.500',
       })
     }
-    console.log(
-      'INPUT DO NOME =>',
-      name,
-      'INPUT DA DESCRIÇÃO =>',
-      description,
-      'INPUT DO PREÇO =>',
-      price,
-      'ESTADO DO ITEM =>',
-      isNew,
-      'ACEITA TROCA =>',
-      acceptTrade,
-      'FORMA DE PAGAMENTO =>',
-      paymentMethods,
-      'IMAGENS =>',
-      images,
-    )
-    navigation.navigate('product', {
+
+    navigation.navigate('preview', {
       name,
       description,
       price,
-      isNew,
-      acceptTrade,
-      paymentMethods,
+      is_new,
+      accept_trade,
+      payment_methods,
       images,
     })
   }
@@ -345,24 +323,27 @@ export function NewAndEdit() {
             )}
           />
 
-          <Radio.Group
-            name="myRadioGroup"
-            accessibilityLabel="Estado do item"
-            direction={'row'}
-            alignItems={'center'}
-            value={isNew ? 'new' : 'used'}
-            onChange={(nextValue) => {
-              // eslint-disable-next-line no-unneeded-ternary
-              setIsNew(nextValue === 'new' ? true : false)
-            }}
-          >
-            <Radio value="new" my={1} size="md" fontFamily={'body'}>
-              Produto novo
-            </Radio>
-            <Radio value="used" my={1} size="md" marginLeft={5}>
-              Produto usado
-            </Radio>
-          </Radio.Group>
+          <Controller
+            control={control}
+            name="is_new"
+            render={({ field: { onChange, value } }) => (
+              <Radio.Group
+                name="is_new"
+                accessibilityLabel="Estado do Item"
+                value={value.toString()}
+                onChange={onChange}
+              >
+                <HStack space="5">
+                  <Radio colorScheme="blue" value="true" my={1}>
+                    Novo
+                  </Radio>
+                  <Radio colorScheme="blue" value="false" my={1} marginLeft={5}>
+                    Usado
+                  </Radio>
+                </HStack>
+              </Radio.Group>
+            )}
+          />
         </VStack>
 
         <VStack space={2} paddingX={6} paddingBottom={6}>
@@ -389,17 +370,24 @@ export function NewAndEdit() {
             Aceita troca?
           </Heading>
 
-          <Switch
-            offTrackColor="gray.300"
-            thumbColor="white"
-            onTrackColor="blue.400"
-            alignSelf={'flex-start'}
-            size={'lg'}
-            mt={0}
-            mb={0}
-            isChecked={acceptTrade}
-            onToggle={setAcceptTrade}
-            value={acceptTrade}
+          <Controller
+            control={control}
+            name="accept_trade"
+            render={({ field: { onChange, value } }) => (
+              <Switch
+                justifyContent="center"
+                alignItems={'center'}
+                offTrackColor="gray.300"
+                thumbColor="white"
+                onTrackColor="blue.400"
+                alignSelf={'flex-start'}
+                size={'lg'}
+                mt={0}
+                mb={0}
+                onToggle={() => onChange(!value)}
+                value={value}
+              />
+            )}
           />
 
           <HStack alignItems="baseline">
@@ -408,53 +396,28 @@ export function NewAndEdit() {
             </Heading>
           </HStack>
 
-          <Checkbox.Group
-            colorScheme="blue"
-            accessibilityLabel="pick an item"
-            onChange={(value) =>
-              handleOnChangeFilter({ payment_methods: value })
-            }
-          >
-            <Checkbox
-              value="boleto"
-              my="1"
-              _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
-            >
-              Boleto
-            </Checkbox>
-
-            <Checkbox
-              value="pix"
-              my="1"
-              _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
-            >
-              Pix
-            </Checkbox>
-
-            <Checkbox
-              value="cash"
-              my="1"
-              _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
-            >
-              Dinheiro
-            </Checkbox>
-
-            <Checkbox
-              value="card"
-              my="1"
-              _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
-            >
-              Cartão de Crédito
-            </Checkbox>
-
-            <Checkbox
-              value="deposit"
-              my="1"
-              _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
-            >
-              Depósito Bancário
-            </Checkbox>
-          </Checkbox.Group>
+          <Controller
+            control={control}
+            name="payment_methods"
+            render={({ field: { onChange } }) => (
+              <PaymentsCheckbox
+                onChange={onChange}
+                accessibilityLabel="Escolha os meios de pagamento"
+                options={[
+                  { key: 'boleto', name: 'Boleto' },
+                  { key: 'pix', name: 'Pix' },
+                  { key: 'cash', name: 'Dinheiro' },
+                  { key: 'card', name: 'Cartão de crédito' },
+                  { key: 'deposit', name: 'Transferência bancária' },
+                ]}
+              />
+            )}
+          />
+          {errors.payment_methods && (
+            <Text color="#dc2626" fontSize="12">
+              {errors.payment_methods.message}
+            </Text>
+          )}
         </VStack>
 
         <HStack
