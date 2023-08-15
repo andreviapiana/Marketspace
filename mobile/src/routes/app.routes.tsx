@@ -8,22 +8,24 @@ import { Home } from '@screens/Home'
 import { MyAds } from '@screens/MyAds'
 import { NewAndEdit } from '@screens/NewAndEdit'
 import { Product } from '@screens/Product'
+import { Preview } from '@screens/Preview'
 
 import { useTheme } from 'native-base'
 
 import HomeSvg from '@assets/home.svg'
 import MyAdsSvg from '@assets/myads.svg'
 import SignOutSvg from '@assets/signout.svg'
-import { Preview } from '@screens/Preview'
 
 import { useAuth } from '@hooks/useAuth'
+
+import { ProductDTO } from '@dtos/ProductDTO'
 
 type AppRoutes = {
   home: undefined
   myads: undefined
   newandedit: undefined
-  product: undefined
-  preview: undefined
+  product: ProductDTO
+  preview: ProductDTO
   signOut: undefined
 }
 
@@ -112,11 +114,11 @@ export function AppRoutes() {
         options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
       />
 
-<Screen
-  name="preview"
-  component={Preview}
-  options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
-/>
+      <Screen
+        name="preview"
+        component={Preview}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
+      />
     </Navigator>
   )
 }
