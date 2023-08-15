@@ -1,9 +1,8 @@
-import { HStack, Heading, Icon, VStack, Text } from 'native-base'
+import { HStack, Heading, VStack, Text } from 'native-base'
 
 import { ProductTag } from '@components/ProductTag'
 import { UserPhoto } from '@components/UserPhoto'
-
-import { Ionicons, FontAwesome } from '@expo/vector-icons'
+import { PaymentMethodIndicator } from '@components/PaymentMethodIndicator'
 
 import { UserDTO } from '@dtos/UserDTO'
 import { api } from '@services/api'
@@ -65,61 +64,7 @@ export function PreviewInfos({
           <Text fontWeight={'normal'}>{acceptTrade ? 'Sim' : 'Não'}</Text>
         </Heading>
 
-        <VStack mb={6}>
-          <Heading fontFamily={'heading'} fontSize={'sm'}>
-            Meios de pagamento:
-          </Heading>
-
-          <HStack mt={2}>
-            <Icon
-              as={Ionicons}
-              name="barcode-outline"
-              size={'md'}
-              alignItems={'center'}
-            />
-            <Text ml={2}>Boleto</Text>
-          </HStack>
-
-          <HStack mt={2}>
-            <Icon
-              as={FontAwesome}
-              name="qrcode"
-              size={'md'}
-              alignItems={'center'}
-            />
-            <Text ml={2}>Pix</Text>
-          </HStack>
-
-          <HStack mt={2}>
-            <Icon
-              as={FontAwesome}
-              name="money"
-              size={'md'}
-              alignItems={'center'}
-            />
-            <Text ml={2}>Dinheiro</Text>
-          </HStack>
-
-          <HStack mt={2}>
-            <Icon
-              as={FontAwesome}
-              name="credit-card"
-              size={'md'}
-              alignItems={'center'}
-            />
-            <Text ml={2}>Cartão de Crédito</Text>
-          </HStack>
-
-          <HStack mt={2}>
-            <Icon
-              as={FontAwesome}
-              name="bank"
-              size={'md'}
-              alignItems={'center'}
-            />
-            <Text ml={2}>Depósito Bancário</Text>
-          </HStack>
-        </VStack>
+        <PaymentMethodIndicator payment_methods={paymentMethods} />
       </VStack>
     </VStack>
   )
