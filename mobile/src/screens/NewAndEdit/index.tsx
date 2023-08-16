@@ -62,6 +62,7 @@ export function NewAndEdit() {
   const navigation = useNavigation<NativeStackNavigationProp<any>>()
 
   function handleGoBack() {
+    handleResetFormAndImages()
     navigation.goBack()
   }
 
@@ -69,6 +70,7 @@ export function NewAndEdit() {
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormDataProps>({
     defaultValues: {
@@ -170,6 +172,7 @@ export function NewAndEdit() {
     }
 
     navigation.navigate('preview', {
+      handleResetFormAndImages,
       name,
       description,
       price,
@@ -178,6 +181,11 @@ export function NewAndEdit() {
       payment_methods,
       images,
     })
+  }
+
+  async function handleResetFormAndImages() {
+    reset()
+    setImages([])
   }
 
   return (
@@ -432,7 +440,12 @@ export function NewAndEdit() {
           flex={1}
           space={3}
         >
-          <Button flex={1} title={'Cancelar'} variant={'primary'} />
+          <Button
+            flex={1}
+            title={'Cancelar'}
+            variant={'primary'}
+            onPress={handleGoBack}
+          />
           <Button
             flex={1}
             title={'Avançar'}
