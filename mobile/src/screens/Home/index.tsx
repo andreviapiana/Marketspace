@@ -25,8 +25,7 @@ export function Home() {
     try {
       setIsLoading(true)
       const response = await api.get('/products')
-      console.log(response.data)
-      /* setProducts(response.data) */
+      setProducts(response.data)
     } catch (error) {
       const isAppError = error instanceof AppError
       const title = isAppError
@@ -52,7 +51,7 @@ export function Home() {
       <HomeHeader />
       <ActiveAdsCard />
       <Search />
-      <ProductList />
+      <ProductList products={products} isLoading={isLoading} />
     </VStack>
   )
 }

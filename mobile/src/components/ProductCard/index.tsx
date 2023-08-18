@@ -1,31 +1,42 @@
 import { TouchableOpacity, TouchableOpacityProps } from 'react-native'
 import { Box, Heading, Image, Text, VStack, View } from 'native-base'
 
-import LuminariaImg from '@assets/luminaria.png'
-
 import { UserPhoto } from '@components/UserPhoto'
 import { ProductTag } from '@components/ProductTag'
+import { ProductDTO } from '@dtos/ProductDTO'
 
-type Props = TouchableOpacityProps & {
-  isAdDisabled?: boolean
+import { api } from '@services/api'
+
+import { useNavigation } from '@react-navigation/native'
+import { AppNavigatorRoutesProps } from '@routes/app.routes'
+
+type ProductCardProps = TouchableOpacityProps & {
   hideUserAvatar?: boolean
+  product: ProductDTO
 }
 
-export function ProductCard({
-  isAdDisabled,
-  hideUserAvatar,
-  onPress,
-  ...rest
-}: Props) {
-  const is_new = true
+export function ProductCard({ hideUserAvatar, product }: ProductCardProps) {
+  // Navegando para a tela de Detalhes do Produto //
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
+
+  async function handleGoToProduct(id: string) {
+    console.log(
+      `BOTÃO DE DETALHES => CLICOU EM ABRIR DETALHES ENVIANDO ESTE ID => ${id}`,
+    )
+    navigation.navigate('product', { id })
+  }
+
+  const isAdDisabled = product.is_active
 
   return (
-    <TouchableOpacity {...rest} onPress={onPress}>
+    <TouchableOpacity onPress={() => handleGoToProduct(product.id)}>
       <VStack mb={6} position={'relative'}>
         {!hideUserAvatar && (
           <UserPhoto
             size={6}
-            source={{ uri: 'https://github.com/andreviapiana.png' }}
+            source={{
+              uri: `${api.defaults.baseURL}/images/${product.user.avatar}`,
+            }}
             alt="Imagem do usuário"
             position={'absolute'}
             top={1}
@@ -36,10 +47,12 @@ export function ProductCard({
           />
         )}
         <View position={'absolute'} top={1} right={1} zIndex={10}>
-          <ProductTag is_new={is_new} />
+          <ProductTag is_new={product.is_new} />
         </View>
         <Image
-          source={LuminariaImg}
+          source={{
+            uri: `${api.defaults.baseURL}/images/${product.product_images[0]?.path}`,
+          }}
           alt="Imagem do produto"
           w={154}
           h={100}
@@ -75,7 +88,7 @@ export function ProductCard({
           mt={1}
           numberOfLines={2}
         >
-          Luminária pendente
+          {product.name}
         </Text>
 
         <Heading
@@ -83,8 +96,10 @@ export function ProductCard({
           color={isAdDisabled ? 'gray.400' : 'gray.700'}
           fontFamily={'heading'}
         >
-          <Text fontSize={'xs'}>R$&nbsp;</Text>
-          59,90
+          {product.price.toLocaleString('pt-br', {
+            style: 'currency',
+            currency: 'BRL',
+          })}
         </Heading>
       </VStack>
     </TouchableOpacity>
