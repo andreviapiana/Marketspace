@@ -5,7 +5,8 @@ import { ActiveAdsCard } from './components/ActiveAdsCard'
 import { Search } from './components/Search'
 import { ProductList } from './components/ProductList'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
+import { useFocusEffect } from '@react-navigation/native'
 import { api } from '@services/api'
 import { AppError } from '@utils/AppError'
 import { ProductDTO } from '@dtos/ProductDTO'
@@ -42,14 +43,43 @@ export function Home() {
     }
   }
 
-  useEffect(() => {
-    fetchProducts()
-  }, [])
+  // Armazenando o número de anúncios ativos do Usuário //
+  const [myActiveAds, setMyActiveAds] = useState(0)
+
+  // Carregando o Número de anúncios ativos do Usuário //
+  async function fetchUserProducts() {
+    try {
+      setIsLoading(true)
+      const { data } = await api.get(`/users/products`)
+      setMyActiveAds(data.length)
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível encontrar os produtos do usuário, tente novamente mais tarde'
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'error.500',
+      })
+      setMyActiveAds(0)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchProducts()
+      fetchUserProducts()
+    }, []),
+  )
 
   return (
     <VStack flex={1} mt={65}>
       <HomeHeader />
-      <ActiveAdsCard />
+      <ActiveAdsCard myActiveAds={myActiveAds} isLoading={isLoading} />
       <Search />
       <ProductList products={products} isLoading={isLoading} />
     </VStack>
