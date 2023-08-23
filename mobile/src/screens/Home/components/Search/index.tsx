@@ -1,27 +1,16 @@
-import { Flex, Text, VStack, useTheme } from 'native-base'
+import { Flex, Pressable, Text, VStack, useTheme } from 'native-base'
 
 import { Feather } from '@expo/vector-icons'
 
 import { Input } from '@components/Input'
-import { FilterModal, emptyFilters } from '../FilterModal'
 
-import { useState } from 'react'
-import { FiltersDTO } from '@dtos/FiltersDTO'
+type SearchProps = {
+  setShowModal: (value: boolean) => void
+}
 
-export function Search() {
+export function Search({ setShowModal }: SearchProps) {
   // Cores direto do Tema //
   const { colors } = useTheme()
-
-  // Abrindo Modal do Filter //
-  const [modalVisible, setModalVisible] = useState(false)
-
-  async function handleOpenAndCloseModal() {
-    console.log('BOTÃO DO FILTRO => ABRIU OU FECHOU O MODAL')
-    setModalVisible(!modalVisible)
-  }
-
-  // State com os Filtros a serem aplicados //
-  const [filters, setFilters] = useState<FiltersDTO>(emptyFilters)
 
   return (
     <VStack px={6} mt={8}>
@@ -36,23 +25,15 @@ export function Search() {
               |
             </Text>
 
-            <Feather
-              name={'sliders'}
-              size={20}
-              color={colors.gray['600']}
-              onPress={handleOpenAndCloseModal}
-            />
+            <Pressable
+              alignItems="center"
+              _pressed={{ opacity: 0.8 }}
+              onPress={() => setShowModal(true)}
+            >
+              <Feather name={'sliders'} size={20} color={colors.gray['600']} />
+            </Pressable>
           </Flex>
         }
-      />
-
-      <FilterModal
-        visible={modalVisible}
-        onClose={() => handleOpenAndCloseModal()}
-        onChangeFilters={(modalFilters) =>
-          setFilters((prev) => ({ ...prev, modalFilters }))
-        }
-        defaultValue={filters}
       />
     </VStack>
   )

@@ -18,52 +18,33 @@ import { useState } from 'react'
 
 import { FiltersDTO } from '@dtos/FiltersDTO'
 
-type FilterModalProps = {
-  visible: boolean
-  onClose: () => void
-  onChangeFilters: (filters: FiltersDTO) => void
-  defaultValue: FiltersDTO
-}
+import { paymentMethods } from '@dtos/PaymentMethodsDTO'
 
-export const emptyFilters: FiltersDTO = {
-  product_name: null,
-  is_new: null,
-  accept_trade: null,
-  payment_methods: [],
+type FilterModalProps = {
+  setFiltersSelected: (filters: FiltersDTO) => void
+  setShowModal: (value: boolean) => void
+  showModal: boolean
 }
 
 export function FilterModal({
-  visible,
-  onClose,
-  onChangeFilters,
-  defaultValue,
+  setShowModal,
+  setFiltersSelected,
+  showModal,
 }: FilterModalProps) {
-  // Armazenando os Filtros //
-  const [filters, setFilters] = useState<FiltersDTO>(defaultValue)
+  // Armazenando o State individual dos Filtros //
+  const [productCondition, setProductCondition] = useState<boolean | null>(null)
+  const [acceptsTrade, setAcceptsTrade] = useState<boolean>(false)
+  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState([])
 
   // Resetando a escolha dos Filtros //
   async function handleResetFilters() {
-    setFilters(emptyFilters)
-    onChangeFilters(emptyFilters)
-    onClose()
-  }
-
-  // Confirmando a escolha dos Filtros //
-  async function handleApplyFilters() {
-    onChangeFilters(filters)
-    onClose()
-  }
-
-  // Atualizando o State com a escolha dos Filtros //
-  function handleOnChangeFilter(change: Partial<FiltersDTO>) {
-    setFilters((prevFilter) => ({
-      ...prevFilter,
-      ...change,
-    }))
+    setProductCondition(null)
+    setAcceptsTrade(false)
+    setSelectedPaymentMethods([])
   }
 
   return (
-    <Modal isOpen={visible} onClose={onClose}>
+    <Modal flex={1} isOpen={showModal}>
       <VStack
         width="full"
         bg="gray.200"
@@ -80,7 +61,7 @@ export function FilterModal({
           <IconButton
             rounded="full"
             icon={<Icon as={Feather} name="x" color="gray.400" size="lg" />}
-            onPress={onClose}
+            onPress={() => setShowModal(false)}
           />
         </HStack>
 
@@ -92,21 +73,13 @@ export function FilterModal({
           <HStack>
             <ConditionFilter
               name={'NOVO'}
-              onPress={() =>
-                handleOnChangeFilter({
-                  is_new: filters.is_new === true ? null : true,
-                })
-              }
-              value={filters.is_new === true}
+              onPress={() => setProductCondition(true)}
+              value={productCondition === true}
             />
             <ConditionFilter
               name={'USADO'}
-              onPress={() =>
-                handleOnChangeFilter({
-                  is_new: filters.is_new === false ? null : false,
-                })
-              }
-              value={filters.is_new === false}
+              onPress={() => setProductCondition(false)}
+              value={productCondition === false}
             />
           </HStack>
         </VStack>
@@ -123,12 +96,8 @@ export function FilterModal({
             size={'lg'}
             mt={0}
             mb={0}
-            value={!!filters.accept_trade}
-            onToggle={() =>
-              handleOnChangeFilter({
-                accept_trade: !filters.accept_trade,
-              })
-            }
+            isChecked={acceptsTrade}
+            onValueChange={setAcceptsTrade}
           />
         </VStack>
 
@@ -141,51 +110,22 @@ export function FilterModal({
 
           <Checkbox.Group
             colorScheme="blue"
-            accessibilityLabel="pick an item"
-            defaultValue={filters.payment_methods}
-            onChange={(value) =>
-              handleOnChangeFilter({ payment_methods: value })
-            }
+            accessibilityLabel="Selecione um meio de pagamento"
+            onChange={setSelectedPaymentMethods}
+            value={selectedPaymentMethods}
           >
-            <Checkbox
-              _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
-              value="boleto"
-              my="1"
-            >
-              Boleto
-            </Checkbox>
-
-            <Checkbox
-              value="pix"
-              my="1"
-              _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
-            >
-              Pix
-            </Checkbox>
-
-            <Checkbox
-              value="cash"
-              my="1"
-              _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
-            >
-              Dinheiro
-            </Checkbox>
-
-            <Checkbox
-              value="card"
-              my="1"
-              _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
-            >
-              Cartão de Crédito
-            </Checkbox>
-
-            <Checkbox
-              value="deposit"
-              my="1"
-              _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
-            >
-              Depósito Bancário
-            </Checkbox>
+            {paymentMethods.map((method) => (
+              <Checkbox
+                value={method.key}
+                my={1}
+                key={method.key}
+                _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
+              >
+                <Text color="gray.600" fontSize="md">
+                  {method.name}
+                </Text>
+              </Checkbox>
+            ))}
           </Checkbox.Group>
         </VStack>
 
@@ -201,7 +141,14 @@ export function FilterModal({
             title="Aplicar filtros"
             variant={'secondary'}
             flex={1}
-            onPress={handleApplyFilters}
+            onPress={() => {
+              setFiltersSelected({
+                is_new: productCondition,
+                accept_trade: acceptsTrade,
+                payment_methods: selectedPaymentMethods,
+              })
+              setShowModal(false)
+            }}
           />
         </HStack>
       </VStack>
