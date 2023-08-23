@@ -26,7 +26,7 @@ export function ProductCard({ hideUserAvatar, product }: ProductCardProps) {
     navigation.navigate('product', { id })
   }
 
-  const isAdDisabled = product.is_active
+  const isAdDisabled = product.is_active === false
 
   return (
     <TouchableOpacity onPress={() => handleGoToProduct(product.id)}>

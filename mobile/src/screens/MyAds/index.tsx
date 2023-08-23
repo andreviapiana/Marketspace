@@ -8,71 +8,22 @@ import {
   Select,
   CheckIcon,
   FlatList,
+  useToast,
 } from 'native-base'
 
 import { Feather } from '@expo/vector-icons'
 
 import { ProductCard } from '@components/ProductCard'
+import { Loading } from '@components/Loading'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { AppNavigatorRoutesProps } from '@routes/app.routes'
 
-const PRODUCTS = [
-  {
-    id: '1',
-    name: 'Luminária Pendente',
-    description:
-      'Essa é a melhor luminária do mundo. Você não vai se arrepender',
-    is_new: true,
-    price: '59,90',
-    accept_trade: true,
-    user_id: '1',
-    is_active: true,
-    created_at: '2022-11-14T19:31:48.662Z',
-    updated_at: '2022-11-14T19:31:48.662Z',
-  },
-  {
-    id: '2',
-    name: 'Luminária Pendente',
-    description:
-      'Essa é a melhor luminária do mundo. Você não vai se arrepender',
-    is_new: true,
-    price: '29,90',
-    accept_trade: true,
-    user_id: '1',
-    is_active: true,
-    created_at: '2022-11-14T19:31:48.662Z',
-    updated_at: '2022-11-14T19:31:48.662Z',
-  },
-  {
-    id: '3',
-    name: 'Luminária Pendente',
-    description:
-      'Essa é a melhor luminária do mundo. Você não vai se arrepender',
-    is_new: true,
-    price: '59,90',
-    accept_trade: true,
-    user_id: '1',
-    is_active: true,
-    created_at: '2022-11-14T19:31:48.662Z',
-    updated_at: '2022-11-14T19:31:48.662Z',
-  },
-  {
-    id: '4',
-    name: 'Luminária Pendente',
-    description:
-      'Essa é a melhor luminária do mundo. Você não vai se arrepender',
-    is_new: true,
-    price: '59,90',
-    accept_trade: true,
-    user_id: '1',
-    is_active: true,
-    created_at: '2022-11-14T19:31:48.662Z',
-    updated_at: '2022-11-14T19:31:48.662Z',
-  },
-]
+import { ProductDTO } from '@dtos/ProductDTO'
+import { AppError } from '@utils/AppError'
+import { api } from '@services/api'
 
 export function MyAds() {
   // State inicial do Filtro dos Meus Anúncios //
@@ -82,9 +33,62 @@ export function MyAds() {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   async function handleCreateNewAd() {
-    console.log('BOTÃO DE CRIAÇÃO => CLICOU EM CRIAR NOVO AD')
     navigation.navigate('newandedit')
   }
+
+  // Loading //
+  const [isLoading, setIsLoading] = useState(false)
+
+  // Notificação Toast //
+  const toast = useToast()
+
+  // State p/ armazenar os Produtos/Anúncios //
+  const [products, setProducts] = useState<ProductDTO[]>([])
+
+  // Fetch dos Meus Produtos //
+  async function fetchUserProducts() {
+    try {
+      setIsLoading(true)
+
+      const { data } = await api.get(`/users/products`)
+
+      const adsWithActiveProducts = data.filter(
+        (item: ProductDTO) => item.is_active,
+      )
+
+      const adsWithInactiveProducts = data.filter(
+        (item: ProductDTO) => !item.is_active,
+      )
+
+      if (filter === 'all') {
+        setProducts(data)
+      } else {
+        setProducts(
+          filter === 'active' ? adsWithActiveProducts : adsWithInactiveProducts,
+        )
+      }
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError
+        ? error.message
+        : 'Não foi Encontrar os produtos, tente novamente mais tarde'
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500',
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Disparando o Fetch //
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserProducts()
+    }, [filter]),
+  )
 
   return (
     <VStack flex={1} mt={65}>
@@ -115,7 +119,7 @@ export function MyAds() {
         justifyContent={'space-between'}
         alignItems={'center'}
       >
-        <Text>9 anúncios</Text>
+        <Text>{products.length} anúncios</Text>
 
         <Select
           selectedValue={filter}
@@ -139,19 +143,25 @@ export function MyAds() {
         </Select>
       </HStack>
 
-      <FlatList
-        data={PRODUCTS}
-        keyExtractor={(item) => item.id}
-        renderItem={() => <ProductCard isAdDisabled hideUserAvatar />}
-        showsVerticalScrollIndicator={false}
-        _contentContainerStyle={{
-          paddingBottom: 4,
-        }}
-        numColumns={2}
-        columnWrapperStyle={{ justifyContent: 'space-between' }}
-        px={6}
-        mt={2}
-      />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={products}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ProductCard product={item} hideUserAvatar />
+          )}
+          showsVerticalScrollIndicator={false}
+          _contentContainerStyle={{
+            paddingBottom: 4,
+          }}
+          numColumns={2}
+          columnWrapperStyle={{ justifyContent: 'space-between' }}
+          px={6}
+          mt={2}
+        />
+      )}
     </VStack>
   )
 }
