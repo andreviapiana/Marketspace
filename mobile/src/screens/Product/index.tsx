@@ -1,4 +1,4 @@
-import { ScrollView, VStack, useToast, Text } from 'native-base'
+import { ScrollView, VStack, useToast } from 'native-base'
 
 import { ProductCarousel } from '@components/ProductCarousel'
 import { ProductHeader } from './components/ProductHeader'
@@ -79,6 +79,42 @@ export function Product() {
   // Variante com o Produto Desativado //
   const isAdDisabled = !product.is_active
 
+  // Loading no Update //
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  // Função p/ Ativar ou Desativar um Produto //
+  async function handleEnableOrDisableAnnounce() {
+    try {
+      setIsUpdating(true)
+
+      const data = {
+        is_active: !product.is_active,
+      }
+
+      await api.patch(`/products/${product.id}`, data)
+      await reloadProducts()
+      handleGoBack()
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível encontrar os produtos do usuário, tente novamente mais tarde'
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500',
+      })
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  // Função de Refetch dos Produtos //
+  async function reloadProducts() {
+    await getProductById()
+  }
+
   // Disparando o Fetch usando o ID ao abrir a página //
   useEffect(() => {
     getProductById()
@@ -110,6 +146,8 @@ export function Product() {
               isMyProduct={isMyProduct}
               isAdDisabled={isAdDisabled}
               productPrice={product.price}
+              enableOrDisableAnnounce={handleEnableOrDisableAnnounce}
+              isLoading={isUpdating}
             />
           </ScrollView>
         </VStack>

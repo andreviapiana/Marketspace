@@ -7,12 +7,16 @@ type ProductFooterProps = {
   isMyProduct: boolean
   isAdDisabled: boolean
   productPrice: number
+  enableOrDisableAnnounce: (value: boolean) => void
+  isLoading: boolean
 }
 
 export function ProductFooter({
   isMyProduct,
   isAdDisabled,
   productPrice,
+  enableOrDisableAnnounce,
+  isLoading,
 }: ProductFooterProps) {
   return (
     <View>
@@ -60,12 +64,16 @@ export function ProductFooter({
             <Button
               title={'Reativar anúncio'}
               icon="power"
+              onPress={() => enableOrDisableAnnounce(false)}
+              isLoading={isLoading}
             />
           ) : (
             <Button
               title={'Desativar anúncio'}
               icon="power"
               variant={'secondary'}
+              onPress={() => enableOrDisableAnnounce(true)}
+              isLoading={isLoading}
             />
           )}
           <Button
