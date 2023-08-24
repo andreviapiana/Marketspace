@@ -14,7 +14,7 @@ export function ProductHeader({ isMyProduct, onPress }: ProductHeaderProps) {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   function handleGoBack() {
-    navigation.goBack()
+    isMyProduct ? navigation.navigate('myads') : navigation.goBack()
   }
 
   return (

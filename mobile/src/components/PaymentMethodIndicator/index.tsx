@@ -1,8 +1,9 @@
 import { HStack, Heading, VStack, Icon, Text } from 'native-base'
 import { Ionicons, FontAwesome } from '@expo/vector-icons'
+import { PaymentMethodsDTO } from '@dtos/PaymentMethodsDTO'
 
 type PaymentMethodIndicatorProps = {
-  payment_methods: string[]
+  payment_methods: PaymentMethodsDTO[]
 }
 
 export function PaymentMethodIndicator({
@@ -81,9 +82,9 @@ export function PaymentMethodIndicator({
       <Heading fontFamily={'heading'} fontSize={'sm'}>
         Meios de pagamento:
       </Heading>
-      {payment_methods.map((item) => (
-        <HStack key={item} mt="1">
-          {paymentMethodIndicator(item)}
+      {payment_methods?.map((item) => (
+        <HStack key={item.key} mt="1">
+          {paymentMethodIndicator(item.key)}
         </HStack>
       ))}
     </VStack>

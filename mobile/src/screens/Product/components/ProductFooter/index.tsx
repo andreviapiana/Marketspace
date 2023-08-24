@@ -1,4 +1,4 @@
-import { HStack, Heading, VStack, Text } from 'native-base'
+import { HStack, Heading, VStack } from 'native-base'
 import { View, Linking } from 'react-native'
 
 import { Button } from '@components/Button'
@@ -6,11 +6,13 @@ import { Button } from '@components/Button'
 type ProductFooterProps = {
   isMyProduct: boolean
   isAdDisabled: boolean
+  productPrice: number
 }
 
 export function ProductFooter({
   isMyProduct,
   isAdDisabled,
+  productPrice,
 }: ProductFooterProps) {
   return (
     <View>
@@ -25,8 +27,10 @@ export function ProductFooter({
           flex={1}
         >
           <Heading fontFamily={'heading'} color={'blue.500'} fontSize={'xl'}>
-            <Text fontSize={'sm'}>R$&nbsp;</Text>
-            120,00
+            {productPrice?.toLocaleString('pt-br', {
+              style: 'currency',
+              currency: 'BRL',
+            })}
           </Heading>
 
           <Button
@@ -53,7 +57,10 @@ export function ProductFooter({
       ) : (
         <VStack paddingX={6} space={2} mt={2} mb={10}>
           {isAdDisabled ? (
-            <Button title={'Reativar anúncio'} icon="power" />
+            <Button
+              title={'Reativar anúncio'}
+              icon="power"
+            />
           ) : (
             <Button
               title={'Desativar anúncio'}

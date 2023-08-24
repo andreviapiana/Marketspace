@@ -24,7 +24,7 @@ type AppRoutes = {
   home: undefined
   myads: undefined
   newandedit: undefined
-  product: ProductDTO
+  product: { id: string }
   preview: ProductDTO
   signOut: undefined
 }

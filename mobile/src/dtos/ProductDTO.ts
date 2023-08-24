@@ -1,5 +1,4 @@
 import { ProductImageDTO } from './ProductImageDTO'
-import { UserDTO } from './UserDTO'
 import { PaymentMethodsDTO } from './PaymentMethodsDTO'
 
 export type ProductDTO = {
@@ -12,5 +11,10 @@ export type ProductDTO = {
   is_active: boolean
   product_images: ProductImageDTO[]
   payment_methods: PaymentMethodsDTO[]
-  user: UserDTO
+  user: {
+    avatar: string
+    name: string
+    tel: string
+  }
+  user_id: string
 }
