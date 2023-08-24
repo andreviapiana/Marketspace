@@ -11,6 +11,7 @@ export function ProductTag({ is_new }: TagProps) {
       px={2}
       py={0.5}
       borderRadius={999}
+      alignSelf={'flex-start'}
     >
       <Text fontSize={10} color={'white'}>
         {is_new ? 'NOVO' : 'USADO'}
