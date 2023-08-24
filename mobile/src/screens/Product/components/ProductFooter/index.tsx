@@ -8,7 +8,9 @@ type ProductFooterProps = {
   isAdDisabled: boolean
   productPrice: number
   enableOrDisableAnnounce: (value: boolean) => void
+  removeAnnounce: (value: boolean) => void
   isLoading: boolean
+  isDeleting: boolean
 }
 
 export function ProductFooter({
@@ -16,7 +18,9 @@ export function ProductFooter({
   isAdDisabled,
   productPrice,
   enableOrDisableAnnounce,
+  removeAnnounce,
   isLoading,
+  isDeleting,
 }: ProductFooterProps) {
   return (
     <View>
@@ -80,6 +84,8 @@ export function ProductFooter({
             title={'Excluir anúncio'}
             icon="trash-can-outline"
             variant={'primary'}
+            onPress={() => removeAnnounce(true)}
+            isLoading={isDeleting}
           />
         </VStack>
       )}

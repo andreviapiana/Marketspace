@@ -110,6 +110,37 @@ export function Product() {
     }
   }
 
+  // Loading no botão de Exlusão de um Anúncio //
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  // Função p/ Excluir um Anúncio //
+  async function handleRemoveAnnounce() {
+    try {
+      setIsDeleting(true)
+      await api.delete(`/products/${id}`)
+
+      handleGoBack()
+      toast.show({
+        title: 'Anúncio excluído com sucesso!',
+        placement: 'top',
+        bgColor: 'green.500',
+      })
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível encontrar os produtos do usuário, tente novamente mais tarde'
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500',
+      })
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   // Função de Refetch dos Produtos //
   async function reloadProducts() {
     await getProductById()
@@ -147,7 +178,9 @@ export function Product() {
               isAdDisabled={isAdDisabled}
               productPrice={product.price}
               enableOrDisableAnnounce={handleEnableOrDisableAnnounce}
+              removeAnnounce={handleRemoveAnnounce}
               isLoading={isUpdating}
+              isDeleting={isDeleting}
             />
           </ScrollView>
         </VStack>
