@@ -23,7 +23,10 @@ import { ProductDTO } from '@dtos/ProductDTO'
 type AppRoutes = {
   home: undefined
   myads: undefined
-  newandedit: undefined
+  newandedit: {
+    id?: string
+    mode: 'create' | 'edit'
+  }
   product: { id: string }
   preview: ProductDTO
   signOut: undefined

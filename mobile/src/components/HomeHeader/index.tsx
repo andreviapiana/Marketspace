@@ -17,7 +17,7 @@ export function HomeHeader() {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   async function handleEditProduct() {
-    navigation.navigate('newandedit')
+    navigation.navigate('newandedit', { mode: 'create' })
   }
 
   return (

@@ -36,8 +36,8 @@ export function Product() {
   }
 
   // Navegando para a tela de Edição //
-  async function handleEditProduct() {
-    navigation.navigate('newandedit')
+  async function handleEditProduct(id: string) {
+    navigation.navigate('newandedit', { id, mode: 'edit' })
   }
 
   // Loading //
@@ -159,7 +159,7 @@ export function Product() {
         <VStack flex={1} mt={'64px'}>
           <ProductHeader
             isMyProduct={isMyProduct}
-            onPress={handleEditProduct}
+            onPress={() => handleEditProduct(id)}
           />
 
           <ProductCarousel
