@@ -64,7 +64,7 @@ export function PreviewInfos({
           <Text fontWeight={'normal'}>{acceptTrade ? 'Sim' : 'Não'}</Text>
         </Heading>
 
-        <PaymentMethodIndicator payment_methods={paymentMethods} />
+        <PaymentMethodIndicator payment_methodsPreview={paymentMethods} />
       </VStack>
     </VStack>
   )

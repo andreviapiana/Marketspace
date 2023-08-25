@@ -3,11 +3,13 @@ import { Ionicons, FontAwesome } from '@expo/vector-icons'
 import { PaymentMethodsDTO } from '@dtos/PaymentMethodsDTO'
 
 type PaymentMethodIndicatorProps = {
-  payment_methods: PaymentMethodsDTO[]
+  payment_methods?: PaymentMethodsDTO[]
+  payment_methodsPreview?: string[]
 }
 
 export function PaymentMethodIndicator({
   payment_methods,
+  payment_methodsPreview,
 }: PaymentMethodIndicatorProps) {
   // Opções de Pagamento a serem Mapeadas //
   function paymentMethodIndicator(paymentMethod: string) {
@@ -85,6 +87,11 @@ export function PaymentMethodIndicator({
       {payment_methods?.map((item) => (
         <HStack key={item.key} mt="1">
           {paymentMethodIndicator(item.key)}
+        </HStack>
+      ))}
+      {payment_methodsPreview?.map((item, index) => (
+        <HStack key={index} mt="1">
+          {paymentMethodIndicator(item)}
         </HStack>
       ))}
     </VStack>

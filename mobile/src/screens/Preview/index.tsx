@@ -108,7 +108,7 @@ export function Preview() {
       const isAppError = error instanceof AppError
       const title = isAppError
         ? error.message
-        : 'Não foi possível cadastrar o seu produto. Tente novamente mais tarde.'
+        : 'Não foi possível cadastrar o produto. Tente novamente.'
 
       toast.show({
         title,
