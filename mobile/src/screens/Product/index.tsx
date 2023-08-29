@@ -5,9 +5,13 @@ import { ProductHeader } from './components/ProductHeader'
 import { ProductFooter } from './components/ProductFooter'
 import { ProductInfos } from './components/ProductInfos'
 
-import { useNavigation, useRoute } from '@react-navigation/native'
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native'
 import { AppNavigatorRoutesProps } from '@routes/app.routes'
-import { useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { api } from '@services/api'
 import { AppError } from '@utils/AppError'
 import { ProductDTO } from '@dtos/ProductDTO'
@@ -146,10 +150,12 @@ export function Product() {
     await getProductById()
   }
 
-  // Disparando o Fetch usando o ID ao abrir a página //
-  useEffect(() => {
+// Disparando o Fetch usando o ID ao abrir a página já atualizando o produto //
+useFocusEffect(
+  useCallback(() => {
     getProductById()
-  }, [id])
+  }, [id]),
+)
 
   return (
     <>
