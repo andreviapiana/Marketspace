@@ -33,7 +33,7 @@ export function MyAds() {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   async function handleCreateNewAd() {
-    navigation.navigate('newandedit')
+    navigation.navigate('newandedit', { mode: 'create' })
   }
 
   // Loading //
