@@ -118,7 +118,7 @@ export function Home() {
     <>
       <VStack flex={1} mt={65}>
         <HomeHeader />
-        <ActiveAdsCard myActiveAds={myActiveAds} isLoading={isLoading} />
+        <ActiveAdsCard myActiveAds={myActiveAds} />
         <Search setShowModal={setShowModal} setProducts={setProducts} />
         <ProductList products={products} isLoading={isLoadingAd} />
       </VStack>
