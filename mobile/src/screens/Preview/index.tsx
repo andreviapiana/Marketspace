@@ -22,6 +22,7 @@ LogBox.ignoreLogs([
 ])
 
 type RouteParams = {
+  id: string
   name: string
   description: string
   price: number
@@ -30,6 +31,8 @@ type RouteParams = {
   payment_methods: string[]
   images: ProductImageDTO[]
   handleResetFormAndImages: () => void
+  mode: 'create' | 'edit'
+  imagesToDelete: ProductImageDTO[]
 }
 
 export function Preview() {
@@ -40,6 +43,7 @@ export function Preview() {
   const route = useRoute()
 
   const {
+    id,
     name,
     description,
     price,
@@ -48,6 +52,8 @@ export function Preview() {
     is_new,
     accept_trade,
     handleResetFormAndImages,
+    mode,
+    imagesToDelete,
   } = route.params as RouteParams
 
   // Executando o Reset //
@@ -101,14 +107,83 @@ export function Preview() {
       })
 
       callHandleResetFormAndImages()
-      /* await fetchUserProducts() */
-      /* navigation.navigate('product', { id: data.id }) */
-      navigation.navigate('home')
+      navigation.navigate('product', { id: data.id })
     } catch (error) {
       const isAppError = error instanceof AppError
       const title = isAppError
         ? error.message
-        : 'Não foi possível cadastrar o produto. Tente novamente.'
+        : 'Não foi possível cadastrar o produto.\nTente novamente.'
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500',
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  async function handleUpdateProduct() {
+    try {
+      setIsLoading(true)
+
+      // Atualização dos Dados do Produto //
+      await api.put(`/products/${id}`, {
+        name,
+        description,
+        is_new,
+        price,
+        accept_trade,
+        payment_methods,
+      })
+
+      // Adição das novas Imagens //
+      let imagesToUpload = [] as ProductImageDTO[]
+      // eslint-disable-next-line array-callback-return
+      images.map((photo) => {
+        if (!photo.uri.match(`${api.defaults.baseURL}/images/`)) {
+          imagesToUpload = [...imagesToUpload, photo]
+        }
+      })
+
+      if (imagesToUpload.length > 0) {
+        const formData = new FormData()
+        formData.append('product_id', id as string)
+
+        // eslint-disable-next-line array-callback-return
+        imagesToUpload.map((photo) => {
+          if (!photo.uri.match(`${api.defaults.baseURL}/images/`)) {
+            formData.append('images', photo as any)
+          }
+        })
+
+        await api.post('/products/images', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+      }
+
+      // Remoção das Imagens Excluídas no Banco //
+      if (imagesToDelete.length > 0) {
+        await api.delete('/products/images', {
+          data: { productImagesIds: imagesToDelete },
+        })
+      }
+
+      callHandleResetFormAndImages()
+      navigation.navigate('product', { id })
+      return toast.show({
+        title: 'Anúncio editado com sucesso!',
+        placement: 'top',
+        bgColor: 'green.500',
+      })
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível publicar o anúncio.\nTente novamente.'
 
       toast.show({
         title,
@@ -140,7 +215,11 @@ export function Preview() {
           paymentMethods={payment_methods}
         />
 
-        <PreviewFooter isLoading={isLoading} onPress={handleSaveProduct} />
+        <PreviewFooter
+          isLoading={isLoading}
+          onPress={mode === 'edit' ? handleUpdateProduct : handleSaveProduct}
+          id={id}
+        />
       </ScrollView>
     </VStack>
   )

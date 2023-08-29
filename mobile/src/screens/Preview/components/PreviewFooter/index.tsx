@@ -8,15 +8,16 @@ import { AppNavigatorRoutesProps } from '@routes/app.routes'
 type PreviewFooterProps = {
   isLoading: boolean
   onPress: () => void
+  id: string
 }
 
-export function PreviewFooter({ isLoading, onPress }: PreviewFooterProps) {
+export function PreviewFooter({ isLoading, onPress, id }: PreviewFooterProps) {
   // Navegando de volta p/ a tela Anterior //
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   // Navegando de volta para a tela de Edição //
   async function handleEditProduct() {
-    navigation.navigate('newandedit')
+    navigation.navigate('newandedit', { mode: 'edit', id })
   }
   return (
     <HStack

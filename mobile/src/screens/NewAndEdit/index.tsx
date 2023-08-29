@@ -23,8 +23,12 @@ import { ProductPhoto } from '@components/ProductPhoto'
 import { Checkbox } from '@components/Checkbox'
 import { Loading } from '@components/Loading'
 
-import { useNavigation, useRoute } from '@react-navigation/native'
-import { useEffect, useState } from 'react'
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native'
+import { useCallback, useState } from 'react'
 
 import * as ImagePicker from 'expo-image-picker'
 import uuid from 'react-native-uuid'
@@ -77,6 +81,7 @@ export function NewAndEdit() {
   const navigation = useNavigation<NativeStackNavigationProp<any>>()
 
   function handleGoBack() {
+    reset()
     handleResetFormAndImages()
     navigation.goBack()
   }
@@ -156,6 +161,12 @@ export function NewAndEdit() {
   function handleRemovePhoto(photo: ProductImageDTO) {
     setImages((prev) =>
       prev.filter((item) => {
+        if (
+          item.name === photo.name &&
+          photo.uri.match(`${api.defaults.baseURL}/images/`)
+        ) {
+          setImagesToDelete((prev) => [...prev, photo.id])
+        }
         return item.name !== photo.name
       }),
     )
@@ -196,6 +207,8 @@ export function NewAndEdit() {
       payment_methods,
       images,
       id,
+      mode,
+      imagesToDelete,
     })
   }
 
@@ -209,6 +222,7 @@ export function NewAndEdit() {
       payment_methods: [],
     })
     setImages([])
+    setImagesToDelete([])
   }
 
   // Loading //
@@ -231,6 +245,7 @@ export function NewAndEdit() {
           name: image.path,
           uri: `${api.defaults.baseURL}/images/${image.path}`,
           type: `image/${image.path.split('.')[1]}`,
+          id: image.id,
         }
       })
 
@@ -265,9 +280,11 @@ export function NewAndEdit() {
   }
 
   // Disparando o Fetch usando o ID ao abrir a página //
-  useEffect(() => {
-    getProductById()
-  }, [id])
+  useFocusEffect(
+    useCallback(() => {
+      getProductById()
+    }, [id]),
+  )
 
   return (
     <>
@@ -327,7 +344,11 @@ export function NewAndEdit() {
                 renderItem={({ item }) => (
                   <VStack>
                     <ProductPhoto
-                      source={{ uri: item.uri }}
+                      source={{
+                        uri: item.uri
+                          ? item.uri
+                          : `${api.defaults.baseURL}/images/${item.path}`,
+                      }}
                       alt="Foto do produto"
                       size={PHOTO_SIZE}
                     />

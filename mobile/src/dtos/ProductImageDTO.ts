@@ -3,4 +3,5 @@ export type ProductImageDTO = {
   uri: string
   type: string
   path: string
+  id: string
 }

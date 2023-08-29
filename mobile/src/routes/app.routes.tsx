@@ -19,6 +19,7 @@ import SignOutSvg from '@assets/signout.svg'
 import { useAuth } from '@hooks/useAuth'
 
 import { ProductDTO } from '@dtos/ProductDTO'
+import { ProductImageDTO } from '@dtos/ProductImageDTO'
 
 type AppRoutes = {
   home: undefined
@@ -28,7 +29,9 @@ type AppRoutes = {
     mode: 'create' | 'edit'
   }
   product: { id: string }
-  preview: ProductDTO
+  preview: ProductDTO & {
+    imagesToDelete: ProductImageDTO[]
+  }
   signOut: undefined
 }
 
