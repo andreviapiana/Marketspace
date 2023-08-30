@@ -27,9 +27,6 @@ export function Home() {
   // State com o Status do Modal (aberto ou fechado) //
   const [showModal, setShowModal] = useState(false)
 
-  // Loading no Card dos Meus Anúncios Ativos //
-  const [isLoading, setIsLoading] = useState(false)
-
   // Loading nos Produtos da Home //
   const [isLoadingAd, setIsLoadingAd] = useState(false)
 
@@ -82,7 +79,6 @@ export function Home() {
   // Carregando o Número de anúncios ativos do Usuário //
   async function fetchUserProducts() {
     try {
-      setIsLoading(true)
       const { data } = await api.get(`/users/products`)
       setMyActiveAds(data.length)
     } catch (error) {
@@ -97,8 +93,6 @@ export function Home() {
         bgColor: 'red.500',
       })
       setMyActiveAds(0)
-    } finally {
-      setIsLoading(false)
     }
   }
 

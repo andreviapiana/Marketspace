@@ -3,11 +3,11 @@ import {
   Text,
   VStack,
   HStack,
-  Checkbox,
   Switch,
   Heading,
   Icon,
   IconButton,
+  Radio,
 } from 'native-base'
 
 import { Button } from '@components/Button'
@@ -20,27 +20,72 @@ import { FiltersDTO } from '@dtos/FiltersDTO'
 
 import { paymentMethods } from '@dtos/PaymentMethodsDTO'
 
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { Controller, useForm } from 'react-hook-form'
+import { Checkbox } from '@components/Checkbox'
+
 type FilterModalProps = {
   setFiltersSelected: (filters: FiltersDTO) => void
   setShowModal: (value: boolean) => void
   showModal: boolean
 }
 
+const filterModalSchema = yup.object({
+  is_new: yup.boolean().required(),
+  accept_trade: yup.boolean().required(),
+  payment_methods: yup
+    .array()
+    .min(0, 'Selecione um meio de pagamento.')
+    .required('Selecione um meio de pagamento.'),
+})
+
+type ModalFormDataProps = yup.InferType<typeof filterModalSchema>
+
 export function FilterModal({
   setShowModal,
   setFiltersSelected,
   showModal,
 }: FilterModalProps) {
-  // Armazenando o State individual dos Filtros //
-  const [productCondition, setProductCondition] = useState<boolean | null>(null)
-  const [acceptsTrade, setAcceptsTrade] = useState<boolean>(false)
-  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState([])
+  // Armazenando os Inputs //
+  const { control, handleSubmit, reset } = useForm<ModalFormDataProps>({
+    defaultValues: {
+      is_new: true,
+      accept_trade: false,
+      payment_methods: [],
+    },
+    resolver: yupResolver(filterModalSchema),
+  })
 
   // Resetando a escolha dos Filtros //
   async function handleResetFilters() {
-    setProductCondition(null)
-    setAcceptsTrade(false)
-    setSelectedPaymentMethods([])
+    reset({
+      is_new: true,
+      accept_trade: false,
+      payment_methods: [],
+    })
+    setFiltersSelected({} as FiltersDTO)
+    setShowModal(false)
+  }
+
+  // Mapeando os Meios de Pagamento dos Checkbox //
+  const PaymentOptions = paymentMethods.map((payment) => {
+    return { title: payment.name, value: payment.key }
+  })
+
+  // Função de Setagem dos Filtros do Modal //
+  async function handleSetModalFilters({
+    is_new,
+    accept_trade,
+    payment_methods,
+  }: ModalFormDataProps) {
+    setFiltersSelected({
+      is_new,
+      accept_trade,
+      payment_methods,
+    })
+
+    setShowModal(false)
   }
 
   return (
@@ -70,18 +115,27 @@ export function FilterModal({
             Condição
           </Text>
 
-          <HStack>
-            <ConditionFilter
-              name={'NOVO'}
-              onPress={() => setProductCondition(true)}
-              value={productCondition === true}
-            />
-            <ConditionFilter
-              name={'USADO'}
-              onPress={() => setProductCondition(false)}
-              value={productCondition === false}
-            />
-          </HStack>
+          <Controller
+            control={control}
+            name="is_new"
+            render={({ field: { onChange, value } }) => (
+              <Radio.Group
+                name="is_new"
+                accessibilityLabel="Estado do Item"
+                value={value.toString()}
+                onChange={onChange}
+              >
+                <HStack space="5">
+                  <Radio colorScheme="blue" value="true" my={1}>
+                    Novo
+                  </Radio>
+                  <Radio colorScheme="blue" value="false" my={1} marginLeft={5}>
+                    Usado
+                  </Radio>
+                </HStack>
+              </Radio.Group>
+            )}
+          />
         </VStack>
 
         <VStack alignItems="flex-start">
@@ -89,15 +143,24 @@ export function FilterModal({
             Aceita troca?
           </Text>
 
-          <Switch
-            offTrackColor="gray.300"
-            thumbColor="white"
-            onTrackColor="blue.400"
-            size={'lg'}
-            mt={0}
-            mb={0}
-            isChecked={acceptsTrade}
-            onValueChange={setAcceptsTrade}
+          <Controller
+            control={control}
+            name="accept_trade"
+            render={({ field: { onChange, value } }) => (
+              <Switch
+                justifyContent="center"
+                alignItems={'center'}
+                offTrackColor="gray.300"
+                thumbColor="white"
+                onTrackColor="blue.400"
+                alignSelf={'flex-start'}
+                size={'lg'}
+                mt={0}
+                mb={0}
+                onToggle={() => onChange(!value)}
+                value={value}
+              />
+            )}
           />
         </VStack>
 
@@ -108,25 +171,17 @@ export function FilterModal({
             </Heading>
           </HStack>
 
-          <Checkbox.Group
-            colorScheme="blue"
-            accessibilityLabel="Selecione um meio de pagamento"
-            onChange={setSelectedPaymentMethods}
-            value={selectedPaymentMethods}
-          >
-            {paymentMethods.map((method) => (
+          <Controller
+            control={control}
+            name="payment_methods"
+            render={({ field: { onChange, value } }) => (
               <Checkbox
-                value={method.key}
-                my={1}
-                key={method.key}
-                _checked={{ bg: 'blue.400', borderColor: 'blue.400' }}
-              >
-                <Text color="gray.600" fontSize="md">
-                  {method.name}
-                </Text>
-              </Checkbox>
-            ))}
-          </Checkbox.Group>
+                options={PaymentOptions}
+                value={value as string[]}
+                onChange={onChange}
+              />
+            )}
+          />
         </VStack>
 
         <HStack space={2} mt="4">
@@ -141,14 +196,7 @@ export function FilterModal({
             title="Aplicar filtros"
             variant={'secondary'}
             flex={1}
-            onPress={() => {
-              setFiltersSelected({
-                is_new: productCondition,
-                accept_trade: acceptsTrade,
-                payment_methods: selectedPaymentMethods,
-              })
-              setShowModal(false)
-            }}
+            onPress={handleSubmit(handleSetModalFilters)}
           />
         </HStack>
       </VStack>
