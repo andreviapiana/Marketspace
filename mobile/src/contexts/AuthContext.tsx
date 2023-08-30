@@ -104,6 +104,15 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     loadUserData()
   }, [])
 
+  // useEffect de Interceptação do Token //
+  useEffect(() => {
+    const subscribe = api.registerInterceptTokenManager(signOut)
+
+    return () => {
+      subscribe()
+    }
+  }, [])
+
   return (
     <AuthContext.Provider
       value={{ user, signIn, isLoadingUserStorageData, signOut }}
