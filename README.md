@@ -27,7 +27,7 @@ ___
 ## 🎨 Layout
 Imagens da aplicação são vistas abaixo:
 
-<img width="1920" alt="Cover" src="https://github.com/andreviapiana/DailyDiet/assets/106932234/58f77ba5-d785-48ba-b11d-64f7eef74b01">
+![Cover](https://github.com/andreviapiana/Marketspace/assets/106932234/a877a399-a38b-4384-bfca-523e63d5f6b7)
 
 ___
 
