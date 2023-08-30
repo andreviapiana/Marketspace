@@ -20,9 +20,6 @@ export function ProductCard({ hideUserAvatar, product }: ProductCardProps) {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   async function handleGoToProduct(id: string) {
-    console.log(
-      `BOTÃO DE DETALHES => CLICOU EM ABRIR DETALHES ENVIANDO ESTE ID => ${id}`,
-    )
     navigation.navigate('product', { id })
   }
 

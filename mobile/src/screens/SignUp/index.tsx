@@ -146,7 +146,16 @@ export function SignUp() {
         })
       }
     } catch (error) {
-      console.log(error)
+      const isAppError = error instanceof AppError
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível selecionar a foto.'
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500',
+      })
     } finally {
       setPhotoIsLoading(false)
     }
